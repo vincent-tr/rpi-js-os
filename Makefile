@@ -7,20 +7,24 @@ RM = rm
 
 KERNEL_BIN = rpi-js-os
 
+ASFLAGS = -mcpu=arm1176jzf-s -fpic -ffreestanding
+CXXFLAGS = -mcpu=arm1176jzf-s -DQEMU -fpic -ffreestanding -std=gnu++14 -O2 -Wall -Wextra -pedantic -fno-rtti -fno-exceptions
+LDFLAGS = -ffreestanding -O2 -nostdlib
+
 all: kernel
 
 clean:
-	$(RM) *.o *.elf $(KERNEL_BIN).qemu $(KERNEL_BIN)
+	$(RM) -f *.o *.elf $(KERNEL_BIN).qemu $(KERNEL_BIN)
 
 $(KERNEL_BIN).qemu.elf:
-	$(CC) -mcpu=arm1176jzf-s -DQEMU -fpic -ffreestanding -c boot.S -o boot.o
-	$(CC) -mcpu=arm1176jzf-s -DQEMU -fpic -ffreestanding -std=gnu99 -c kernel.c -o kernel.o -O2 -Wall -Wextra
-	$(LINK) -T linker-qemu.ld -o $(KERNEL_BIN).qemu.elf -ffreestanding -O2 -nostdlib boot.o kernel.o
+	$(CC) -DQEMU $(ASFLAGS) -c boot.S -o boot.o
+	$(CXX) -DQEMU $(CXXFLAGS) -c kernel.cc -o kernel.o
+	$(LINK) $(LDFLAGS) -T linker-qemu.ld -o $(KERNEL_BIN).qemu.elf boot.o kernel.o
 
 $(KERNEL_BIN).elf:
-	$(CC) -mcpu=arm1176jzf-s -fpic -ffreestanding -c boot.S -o boot.o
-	$(CC) -mcpu=arm1176jzf-s -fpic -ffreestanding -std=gnu99 -c kernel.c -o kernel.o -O2 -Wall -Wextra
-	$(LINK) -T linker-rpi.ld -o $(KERNEL_BIN).elf -ffreestanding -O2 -nostdlib boot.o kernel.o
+	$(CC) $(ASFLAGS) -c boot.S -o boot.o
+	$(CXX) $(CXXFLAGS) -c kernel.c -o kernel.o
+	$(LINK) $(LDFLAGS) -T linker-rpi.ld -o $(KERNEL_BIN).elf boot.o kernel.o
 
 $(KERNEL_BIN).qemu: $(KERNEL_BIN).qemu.elf
 	$(OBJCOPY) $(KERNEL_BIN).qemu.elf -O binary $(KERNEL_BIN).qemu
@@ -32,7 +36,7 @@ kernel: $(KERNEL_BIN).qemu $(KERNEL_BIN)
 
 qemu: $(KERNEL_BIN).qemu
 	qemu-system-arm \
-		-kernel $(KERNEL_BIN) \
+		-kernel $(KERNEL_BIN).qemu \
 		-cpu arm1176 \
 		-m 256 \
 		-M versatilepb \
