@@ -53,4 +53,4 @@ qemu: $(KERNEL_BIN).qemu
 #    -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
 #    -hda 2014-12-24-wheezy-raspbian.img
 
-.PHONY: qemu kernel clean
+.PHONY: qemu kernel all clean
