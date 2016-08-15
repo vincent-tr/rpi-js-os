@@ -29,4 +29,5 @@
 *.app
 
 rpi-js-os
+rpi-js-os.qemu
 *.elf
