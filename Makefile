@@ -9,7 +9,7 @@ RM = rm
 KERNEL_BIN = rpi-js-os
 
 ASFLAGS = -mcpu=arm1176jzf-s -fpic -ffreestanding
-CXXFLAGS = -mcpu=arm1176jzf-s -DQEMU -fpic -ffreestanding -std=gnu++14 -O2 -Wall -Wextra -pedantic -fno-rtti -fno-exceptions
+CXXFLAGS = -mcpu=arm1176jzf-s -fpic -ffreestanding -std=gnu++14 -O2 -Wall -Wextra -pedantic -fno-rtti -fno-exceptions
 LDFLAGS = -ffreestanding -O2 -nostdlib
 
 all: kernel
