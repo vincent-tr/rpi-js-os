@@ -9,14 +9,15 @@ all: $(KERNEL_BIN) $(KERNEL_BIN).qemu
 clean:
 	$(RM) -rf build $(KERNEL_BIN) $(KERNEL_BIN).qemu
 
+# run separatly because too long
 newlib:
 	$(MAKE) -f Makefile.newlib
 
-$(KERNEL_BIN): newlib
+$(KERNEL_BIN):
 	$(MAKE) CONFIG=rpi DEFINES= LINKER_SCRIPT=linker-rpi.ld -f Makefile.kernel
 	$(COPY) build/rpi/$(KERNEL_BIN) $@
 
-$(KERNEL_BIN).qemu: newlib
+$(KERNEL_BIN).qemu:
 	$(MAKE) CONFIG=qemu DEFINES=-DQEMU LINKER_SCRIPT=linker-qemu.ld -f Makefile.kernel
 	$(COPY) build/qemu/$(KERNEL_BIN) $@
 
