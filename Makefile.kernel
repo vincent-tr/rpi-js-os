@@ -23,8 +23,8 @@ build/$(CONFIG):
 build/$(CONFIG)/$(KERNEL_BIN): build/$(CONFIG)/$(KERNEL_BIN).elf
 	$(OBJCOPY) $< -O binary $@
 
-build/$(CONFIG)/$(KERNEL_BIN).elf: build/$(CONFIG)/crti.o build/$(CONFIG)/boot.o build/$(CONFIG)/kernel_main.o build/$(CONFIG)/kernel_hw_uart.o build/$(CONFIG)/crtn.o
-	$(LINK) $(LDFLAGS) -o $@ build/$(CONFIG)/crti.o $(CRTBEGIN_OBJ) build/$(CONFIG)/boot.o build/$(CONFIG)/kernel_main.o build/$(CONFIG)/kernel_hw_uart.o $(CRTEND_OBJ) build/$(CONFIG)/crtn.o -lgcc
+build/$(CONFIG)/$(KERNEL_BIN).elf: build/$(CONFIG)/crti.o build/$(CONFIG)/boot.o build/$(CONFIG)/kernel_main.o build/$(CONFIG)/kernel_hw_uart.o build/$(CONFIG)/kernel_utils_debug.o build/$(CONFIG)/crtn.o
+	$(LINK) $(LDFLAGS) -o $@ build/$(CONFIG)/crti.o $(CRTBEGIN_OBJ) build/$(CONFIG)/boot.o build/$(CONFIG)/kernel_main.o build/$(CONFIG)/kernel_hw_uart.o build/$(CONFIG)/kernel_utils_debug.o $(CRTEND_OBJ) build/$(CONFIG)/crtn.o -lgcc
 
 build/$(CONFIG)/crti.o: src/crti.c build/$(CONFIG)
 	$(CC) $(CRTFLAGS) -c $< -o $@
@@ -39,6 +39,9 @@ build/$(CONFIG)/kernel_main.o: src/kernel/main.cc build/$(CONFIG)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 build/$(CONFIG)/kernel_hw_uart.o: src/kernel/hw/uart.cc build/$(CONFIG)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+build/$(CONFIG)/kernel_utils_debug.o: src/kernel/utils/debug.cc build/$(CONFIG)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 .PHONY: all
