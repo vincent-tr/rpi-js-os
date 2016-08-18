@@ -1,19 +1,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string.h>
+
 #include "kernel/hw/uart.hh"
 #include "kernel/utils/debug.hh"
 
 #ifdef DEBUG_ENABLED
-
-// TODO: libc
-size_t strlen(const char* str)
-{
-  size_t ret = 0;
-  while ( str[ret] != 0 )
-    ret++;
-  return ret;
-}
 
 void uart_write(const unsigned char* buffer, size_t size)
 {

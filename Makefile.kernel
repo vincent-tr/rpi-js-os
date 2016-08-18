@@ -10,7 +10,7 @@ KERNEL_BIN = rpi-js-os
 
 ASFLAGS = -mcpu=arm1176jzf-s -fpic -ffreestanding $(DEFINES) -I./src
 CRTFLAGS = -mcpu=arm1176jzf-s -fpic -ffreestanding -std=gnu99 -O2 -Wall -Wextra $(DEFINES)
-CXXFLAGS = -mcpu=arm1176jzf-s -fpic -ffreestanding -std=gnu++14 -O2 -Wall -Wextra -pedantic -fno-rtti -fno-exceptions $(DEFINES) -I./src
+CXXFLAGS = -mcpu=arm1176jzf-s -fpic -ffreestanding -std=gnu++14 -O2 -Wall -Wextra -pedantic -fno-rtti -fno-exceptions $(DEFINES) -I./src -I./ext/newlib-2.4.0/newlib/libc/include
 LDFLAGS = -ffreestanding -O2 -nostdlib -T $(LINKER_SCRIPT)
 
 CRTBEGIN_OBJ:=$(shell $(CC) $(CRTFLAGS) -print-file-name=crtbegin.o)
@@ -29,7 +29,15 @@ build/$(CONFIG)/$(KERNEL_BIN): build/$(CONFIG)/$(KERNEL_BIN).elf
 	$(OBJCOPY) $< -O binary $@
 
 build/$(CONFIG)/$(KERNEL_BIN).elf: build/$(CONFIG)/crti.o build/$(CONFIG)/boot.o $(KERNEL_OBJECTS) build/$(CONFIG)/crtn.o
-	$(LINK) $(LDFLAGS) -o $@ build/$(CONFIG)/crti.o $(CRTBEGIN_OBJ) build/$(CONFIG)/boot.o $(KERNEL_OBJECTS) $(CRTEND_OBJ) build/$(CONFIG)/crtn.o -lgcc
+	$(LINK) $(LDFLAGS) -o $@ \
+		build/$(CONFIG)/crti.o \
+		$(CRTBEGIN_OBJ) \
+		build/$(CONFIG)/boot.o \
+		$(KERNEL_OBJECTS) \
+		build/newlib/arm-none-eabi/newlib/libc/libc.a \
+		$(CRTEND_OBJ) \
+		build/$(CONFIG)/crtn.o \
+		-lgcc
 
 build/$(CONFIG)/crti.o: src/crti.c build/$(CONFIG)
 	$(CC) $(CRTFLAGS) -c $< -o $@
