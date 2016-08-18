@@ -1,7 +1,7 @@
 #ifndef KERNEL_HW_UART_HH
 #define KERNEL_HW_UART_HH
 
-#include "kernel/utils/non_copyable.hh"
+#include "kernel/utils/non-copyable.hh"
 
 namespace kernel {
   namespace hw {

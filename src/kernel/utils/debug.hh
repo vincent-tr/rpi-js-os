@@ -1,7 +1,7 @@
 #ifndef KERNEL_UTILS_DEBUG_HH
 #define KERNEL_UTILS_DEBUG_HH
 
-#include "kernel/utils/non_copyable.hh"
+#include "kernel/utils/non-copyable.hh"
 
 #ifdef QEMU
 #define DEBUG_ENABLED
