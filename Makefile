@@ -6,8 +6,11 @@ KERNEL_BIN = rpi-js-os
 
 all: $(KERNEL_BIN) $(KERNEL_BIN).qemu
 
-clean:
-	$(RM) -rf build $(KERNEL_BIN) $(KERNEL_BIN).qemu
+clean: clean-kernel
+	$(RM) -rf build
+
+clean-kernel:
+	$(RM) -rf build/rpi build/qemu $(KERNEL_BIN) $(KERNEL_BIN).qemu
 
 # run separatly because too long
 newlib:
@@ -33,4 +36,4 @@ qemu: $(KERNEL_BIN).qemu
 #    -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
 #    -hda 2014-12-24-wheezy-raspbian.img
 
-.PHONY: qemu kernel all clean $(KERNEL_BIN) $(KERNEL_BIN).qemu newlib
+.PHONY: qemu kernel all clean clean-kernel $(KERNEL_BIN) $(KERNEL_BIN).qemu newlib
