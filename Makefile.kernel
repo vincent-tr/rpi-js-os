@@ -20,7 +20,7 @@ build/$(CONFIG)/$(KERNEL_BIN): build/$(CONFIG)/$(KERNEL_BIN).elf
 	$(OBJCOPY) $< -O binary $@
 
 build/$(CONFIG)/$(KERNEL_BIN).elf: build/$(CONFIG)/boot.o build/$(CONFIG)/kernel_main.o
-	$(LINK) $(LDFLAGS) -o $@ $^
+	$(LINK) $(LDFLAGS) -o $@ $^ -lgcc
 
 build/$(CONFIG)/boot.o: src/boot.S build/$(CONFIG)
 	$(CC) $(ASFLAGS) -c $< -o $@
