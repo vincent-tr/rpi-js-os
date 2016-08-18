@@ -3,6 +3,8 @@
 
 #include "hw/uart.hh"
 
+extern "C" void _init();
+
 size_t strlen(const char* str)
 {
   size_t ret = 0;
@@ -23,6 +25,8 @@ void uart_puts(const char* str)
 }
 
 extern "C" void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
+  _init();
+
   (void) r0;
   (void) r1;
   (void) atags;
