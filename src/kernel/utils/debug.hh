@@ -20,6 +20,7 @@ namespace kernel {
         ~debug();
 
         debug &operator << (const char *str);
+        debug &operator << (const int &val);
       };
     }
   }
