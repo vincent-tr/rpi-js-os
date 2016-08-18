@@ -4,6 +4,7 @@ CXX = $(TOOLCHAIN_PREFIX)gcc
 LINK = $(TOOLCHAIN_PREFIX)gcc
 OBJCOPY = $(TOOLCHAIN_PREFIX)objcopy
 MKDIR = mkdir
+FIND = find
 
 KERNEL_BIN = rpi-js-os
 
@@ -14,6 +15,9 @@ LDFLAGS = -ffreestanding -O2 -nostdlib -T $(LINKER_SCRIPT)
 
 CRTBEGIN_OBJ:=$(shell $(CC) $(CRTFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJ:=$(shell $(CC) $(CRTFLAGS) -print-file-name=crtend.o)
+KERNEL_SOURCES:=$(shell $(FIND) ./src/kernel -name '*.cc')
+
+print-%  : ; @echo $* = $($*)
 
 all: build/$(CONFIG)/$(KERNEL_BIN)
 
