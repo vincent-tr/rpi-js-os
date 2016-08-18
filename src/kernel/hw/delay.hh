@@ -1,9 +1,6 @@
 #ifndef KERNEL_HW_DELAY_HH
 #define KERNEL_HW_DELAY_HH
 
-#include <stddef.h>
-#include <stdint.h>
-
 namespace kernel {
   namespace hw {
 
