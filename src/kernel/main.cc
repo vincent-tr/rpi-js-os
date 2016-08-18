@@ -16,6 +16,4 @@ extern "C" void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
   kernel::hw::uart::init();
 
   DEBUG("Hello, kernel World!");
-
-//  while(true);
 }
