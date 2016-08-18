@@ -1,0 +1,14 @@
+MKDIR = mkdir
+MAKE = make
+
+print-%  : ; @echo $* = $($*)
+
+all: build/newlib
+	cd build/newlib; \
+	../../ext/newlib-2.4.0/configure --target=arm-none-eabi; \
+	$(MAKE)
+
+build/newlib:
+	$(MKDIR) -p build/newlib
+
+.PHONY: all
