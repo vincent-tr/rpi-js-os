@@ -1,8 +1,8 @@
-TOOL_PATH = /Users/vincent/workspace/sandbox/rpi-js-os/cross-toolchain/build/bin
-CC = $(TOOL_PATH)/arm-none-eabi-gcc
-CXX = $(TOOL_PATH)/arm-none-eabi-gcc
-LINK = $(TOOL_PATH)/arm-none-eabi-gcc
-OBJCOPY = $(TOOL_PATH)/arm-none-eabi-objcopy
+TOOLCHAIN_PREFIX = arm-none-eabi-
+CC = $(TOOLCHAIN_PREFIX)gcc
+CXX = $(TOOLCHAIN_PREFIX)gcc
+LINK = $(TOOLCHAIN_PREFIX)gcc
+OBJCOPY = $(TOOLCHAIN_PREFIX)objcopy
 MKDIR = mkdir
 
 KERNEL_BIN = rpi-js-os
