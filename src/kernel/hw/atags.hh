@@ -100,6 +100,7 @@ namespace kernel {
         reader& operator++();
         operator bool() const;
         const header *operator*() const;
+        const header *operator->() const;
       };
 
       void init(const void *address);
