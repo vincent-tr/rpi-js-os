@@ -33,11 +33,9 @@ namespace kernel {
         return current;
       }
 
-      void init(const void *address) {
-        tags = reinterpret_cast<const header *>(address);
-
 #ifdef DEBUG_ENABLED
 
+      static void dump() {
         for(reader r; r; ++r) {
           switch(r->tag) {
             case type::CORE: {
@@ -112,7 +110,16 @@ namespace kernel {
             }
           }
         }
+      }
 
+#endif
+
+
+      void init(const void *address) {
+        tags = reinterpret_cast<const header *>(address);
+
+#ifdef DEBUG_ENABLED
+        dump();
 #endif
       }
     }
