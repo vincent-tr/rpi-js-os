@@ -39,7 +39,7 @@ namespace kernel {
       // ATAG_MEM defines a physical memory region
       struct mem : public header {
         uint32_t size;    // Size of region
-        uint32_t address; // Address of start of region
+        void *address; // Address of start of region
       };
 
       // ATAG_VIDEOTEXT defines a VGA text screen. Not relevant to a Raspberry Pi
@@ -48,12 +48,12 @@ namespace kernel {
       struct ramdisk : public header {
         uint32_t flags; // Bit 0 = load, bit 1 = prompt
         uint32_t size;  // Decompressed size in KB
-        uint32_t start; // Start block of ram disk
+        void *start; // Start block of ram disk
       };
 
       // ATAG_INITRD2 - define physical location of ramdisk image
       struct initrd2 : public header {
-        uint32_t address; // Address of ramdisk image
+        void *address; // Address of ramdisk image
         uint32_t size;    // Size of compressed(?) image
       };
 
@@ -70,25 +70,25 @@ namespace kernel {
 
       // ATAG_VIDEOLFB - describes a framebuffer
       struct videolfb : public header {
-        unsigned short int width;      // Width of buffer
-        unsigned short int height;     // Height
-        unsigned short int depth;      // Bits/pixel
-        unsigned short int linelength; // ?
-        uint32_t address;              // Base address of buffer
-        uint32_t size;                 // Size of buffer
-        unsigned char redsize;         // Number of red bits in each pixel
-        unsigned char redpos;          // Position of red bits in pixel
-        unsigned char greensize;
-        unsigned char greenpos;
-        unsigned char bluesize;
-        unsigned char bluepos;
-        unsigned char reservedsize;    // Number of reserved bits/pixel
-        unsigned char reservedpos;     // Position of reserved bits
+        uint16_t width;       // Width of buffer
+        uint16_t height;      // Height
+        uint16_t depth;       // Bits/pixel
+        uint16_t linelength;  // ?
+        void *address;        // Base address of buffer
+        uint32_t size;        // Size of buffer
+        uint8_t redsize;      // Number of red bits in each pixel
+        uint8_t redpos;       // Position of red bits in pixel
+        uint8_t greensize;
+        uint8_t greenpos;
+        uint8_t bluesize;
+        uint8_t bluepos;
+        uint8_t reservedsize; // Number of reserved bits/pixel
+        uint8_t reservedpos;  // Position of reserved bits
       };
 
       // ATAG_CMDLINE - kernel command line
       struct cmdline : public header {
-        char commandline; // Multiple characters from here
+        char commandline[1]; // Multiple characters from here
       };
 
       class reader {

@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string.h>
+
 #include "atags.hh"
 #include "kernel/utils/debug.hh"
 
@@ -39,48 +41,68 @@ namespace kernel {
         for(reader r; r; ++r) {
           switch(r->tag) {
             case type::CORE: {
-              const core *tag = static_cast<const core *>(*r);
+              auto tag = static_cast<const core *>(*r);
               DEBUG("atag core: flags=" << tag->flags << ", pagesize=" << tag->pagesize << ", rootdevice=" << tag->rootdevice);
               break;
             }
 
             case type::MEM: {
-              DEBUG("atag mem: ");
+              auto tag = static_cast<const mem *>(*r);
+              DEBUG("atag mem: size=" << tag->size << ", address=" << tag->address);
               break;
             }
 
             case type::VIDEOTEXT: {
-              DEBUG("atag videotext: ");
+              DEBUG("atag videotext");
               break;
             }
 
             case type::RAMDISK: {
-              DEBUG("atag ramdisk: ");
+              auto tag = static_cast<const ramdisk *>(*r);
+              DEBUG("atag ramdisk: flags=" << tag->flags << ", size=" << tag->size << ", start=" << tag->start);
               break;
             }
 
             case type::INITRD2: {
-              DEBUG("atag initrd: ");
+              auto tag = static_cast<const initrd2 *>(*r);
+              DEBUG("atag initrd: address=" << tag->address << ", size=" << tag->size);
               break;
             }
 
             case type::SERIAL: {
-              DEBUG("atag serial: ");
+              auto tag = static_cast<const serial *>(*r);
+              DEBUG("atag serial: low=" << tag->low << ", high=" << tag->high);
               break;
             }
 
             case type::REVISION: {
-              DEBUG("atag revision: ");
+              auto tag = static_cast<const revision *>(*r);
+              DEBUG("atag revision: revision=" << tag->revision);
               break;
             }
 
             case type::VIDEOLFB: {
-              DEBUG("atag videolfb: ");
+              auto tag = static_cast<const videolfb *>(*r);
+              DEBUG("atag videolfb: width=" << tag->width <<
+                ", height=" << tag->height <<
+                ", depth=" << tag->depth <<
+                ", linelength=" << tag->linelength <<
+                ", address=" << tag->address <<
+                ", size=" << tag->size <<
+                ", redsize=" << tag->redsize <<
+                ", redpos=" << tag->redpos <<
+                ", greensize=" << tag->greensize <<
+                ", greenpos=" << tag->greenpos <<
+                ", bluesize=" << tag->bluesize <<
+                ", bluepos=" << tag->bluepos <<
+                ", reservedsize=" << tag->reservedsize <<
+                ", reservedpos=" << tag->reservedpos);
               break;
             }
 
             case type::CMDLINE: {
-              DEBUG("atag cmdline: ");
+              auto tag = static_cast<const cmdline *>(*r);
+              DEBUG("atag cmdline: cmdline=" << tag->commandline);
               break;
             }
 
