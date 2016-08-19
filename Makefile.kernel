@@ -11,7 +11,7 @@ KERNEL_BIN = rpi-js-os
 ASFLAGS = -mcpu=arm1176jzf-s -fpic -ffreestanding $(DEFINES) -I./src
 CRTFLAGS = -mcpu=arm1176jzf-s -fpic -ffreestanding -std=gnu99 -O2 -Wall -Wextra $(DEFINES)
 CXXFLAGS = -mcpu=arm1176jzf-s -fpic -ffreestanding -std=gnu++14 -O2 -Wall -Wextra -pedantic -fno-rtti -fno-exceptions $(DEFINES) -I./src -I./ext/newlib-2.4.0/newlib/libc/include
-LDFLAGS = -ffreestanding -O2 -nostdlib -T $(LINKER_SCRIPT)
+LDFLAGS = -ffreestanding -O2 -nostdlib -T src/linker-$(CONFIG).ld
 
 CRTBEGIN_OBJ:=$(shell $(CC) $(CRTFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJ:=$(shell $(CC) $(CRTFLAGS) -print-file-name=crtend.o)

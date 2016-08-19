@@ -17,11 +17,11 @@ newlib:
 	$(MAKE) -f Makefile.newlib
 
 $(KERNEL_BIN):
-	$(MAKE) CONFIG=rpi DEFINES= LINKER_SCRIPT=linker-rpi.ld -f Makefile.kernel
+	$(MAKE) CONFIG=rpi DEFINES= -f Makefile.kernel
 	$(COPY) build/rpi/$(KERNEL_BIN) $@
 
 $(KERNEL_BIN).qemu:
-	$(MAKE) CONFIG=qemu DEFINES=-DQEMU LINKER_SCRIPT=linker-qemu.ld -f Makefile.kernel
+	$(MAKE) CONFIG=qemu DEFINES=-DQEMU -f Makefile.kernel
 	$(COPY) build/qemu/$(KERNEL_BIN) $@
 
 qemu: $(KERNEL_BIN).qemu
