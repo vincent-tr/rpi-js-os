@@ -21,6 +21,7 @@ namespace kernel {
 
         debug &operator << (const char *str);
         debug &operator << (const int &val);
+        debug &operator << (const void *ptr);
       };
     }
   }

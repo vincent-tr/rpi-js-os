@@ -34,6 +34,22 @@ namespace kernel {
         itoa(val, str, 10);
         return (*this) << str;
       }
+
+      debug &debug::operator << (const void *ptr) {
+        char buf[16];
+        char str[16];
+
+        itoa(reinterpret_cast<uint32_t>(ptr), buf, 16);
+        const int len = strlen(buf);
+
+        str[0] = '0';
+        str[1] = 'x';
+        for(int i=2; i<10 - len; ++i) {
+          str[i] = '0';
+        }
+        memcpy(str + 10 - len, buf, len + 1);
+        return (*this) << str;
+      }
     }
   }
 }
