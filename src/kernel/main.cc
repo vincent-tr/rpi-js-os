@@ -3,11 +3,26 @@
 
 #include "kernel/kernel-main.hh"
 
-extern "C" void _init();
+namespace kernel {
 
-extern "C" void main(uint32_t boot_device, uint32_t machine_type, const void *atags) {
-  _init();
+  extern "C" void _init();
+  extern "C" uint32_t __bss_start;
+  extern "C" uint32_t __bss_end;
 
-  kernel::kernel_main inst;
-  inst.run(boot_device, machine_type, atags);
+  static void init_bss() {
+    uint32_t* bss = &__bss_start;
+    uint32_t* bss_end = &__bss_end;
+
+    while(bss < bss_end) {
+      *bss++ = 0;
+    }
+  }
+
+  extern "C" void main(uint32_t boot_device, uint32_t machine_type, const void *atags) {
+    init_bss();
+    _init();
+
+    kernel::kernel_main inst;
+    inst.run(boot_device, machine_type, atags);
+  }
 }
