@@ -6,11 +6,11 @@
 
 extern "C" void _init();
 
-extern "C" void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
+extern "C" void kernel_main(uint32_t boot_device, uint32_t machine_type, uint32_t atags) {
   _init();
 
-  (void) r0;
-  (void) r1;
+  (void) boot_device;
+  (void) machine_type;
   (void) atags;
 
   kernel::hw::uart::init();
