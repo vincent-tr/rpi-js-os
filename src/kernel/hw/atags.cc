@@ -39,7 +39,8 @@ namespace kernel {
         for(reader r; r; ++r) {
           switch(r->tag) {
             case type::CORE: {
-              DEBUG("atag core: ");
+              const core *tag = static_cast<const core *>(*r);
+              DEBUG("atag core: flags=" << tag->flags << ", pagesize=" << tag->pagesize << ", rootdevice=" << tag->rootdevice);
               break;
             }
 

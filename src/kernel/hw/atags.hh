@@ -24,12 +24,12 @@ namespace kernel {
       };
 
       // ATAG_NONE ends the list of ATAGs
-      class none : public header {
+      struct none : public header {
         // No further data in this ATAG
       };
 
       // ATAG_CORE begins the list of ATAGs
-      class core : public header {
+      struct core : public header {
         // Optional entries below
         uint32_t flags;      // Bit 0 - read only. Others unused
         uint32_t pagesize;   // Page size
@@ -37,7 +37,7 @@ namespace kernel {
       };
 
       // ATAG_MEM defines a physical memory region
-      class mem : public header {
+      struct mem : public header {
         uint32_t size;    // Size of region
         uint32_t address; // Address of start of region
       };
@@ -45,31 +45,31 @@ namespace kernel {
       // ATAG_VIDEOTEXT defines a VGA text screen. Not relevant to a Raspberry Pi
 
       // ATAG_RAMDISK defines an initial ramdisk - floppy images only?
-      class ramdisk : public header {
+      struct ramdisk : public header {
         uint32_t flags; // Bit 0 = load, bit 1 = prompt
         uint32_t size;  // Decompressed size in KB
         uint32_t start; // Start block of ram disk
       };
 
       // ATAG_INITRD2 - define physical location of ramdisk image
-      class initrd2 : public header {
+      struct initrd2 : public header {
         uint32_t address; // Address of ramdisk image
         uint32_t size;    // Size of compressed(?) image
       };
 
       // ATAG_SERIAL has the 64-bit serial number
-      class serial : public header {
+      struct serial : public header {
         uint32_t low;
         uint32_t high;
       };
 
       // ATAG_REVISION - board revision number
-      class revision : public header {
+      struct revision : public header {
         uint32_t revision;
       };
 
       // ATAG_VIDEOLFB - describes a framebuffer
-      class videolfb : public header {
+      struct videolfb : public header {
         unsigned short int width;      // Width of buffer
         unsigned short int height;     // Height
         unsigned short int depth;      // Bits/pixel
@@ -87,7 +87,7 @@ namespace kernel {
       };
 
       // ATAG_CMDLINE - kernel command line
-      class cmdline : public header {
+      struct cmdline : public header {
         char commandline; // Multiple characters from here
       };
 
