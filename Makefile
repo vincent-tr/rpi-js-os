@@ -31,9 +31,9 @@ qemu: $(KERNEL_BIN).qemu
 		-m 256 \
 		-M versatilepb \
 		-no-reboot \
-		-nographic
+		-nographic \
+    -append "kernel cmd line test"
 #    -serial stdio \
-#    -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
 #    -hda 2014-12-24-wheezy-raspbian.img
 
 .PHONY: qemu kernel all clean clean-kernel $(KERNEL_BIN) $(KERNEL_BIN).qemu newlib
