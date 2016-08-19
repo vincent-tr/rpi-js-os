@@ -1,6 +1,8 @@
 #ifndef KERNEL_HW_ATAGS_HH
 #define KERNEL_HW_ATAGS_HH
 
+// https://github.com/brianwiddas/pi-baremetal/blob/master/atags.h
+
 namespace kernel {
   namespace hw {
     namespace atags {
