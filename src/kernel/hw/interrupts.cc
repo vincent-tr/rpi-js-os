@@ -112,14 +112,14 @@ namespace kernel {
        */
       static __attribute__ ((naked, aligned(32), section(".text.interrupts"))) void vectors_start() {
         asm volatile(
-          "b reset_vector\n" // ARM4_XRQ_RESET
+          "b reset_vector\n"                 // ARM4_XRQ_RESET
           "b undefined_instruction_vector\n" // ARM4_XRQ_UNDEF
-          "b software_interrupt_vector\n" // ARM4_XRQ_SWINT
-          "b prefetch_abort_vector\n" // ARM4_XRQ_ABRTP
-          "b data_abort_vector\n" // ARM4_XRQ_ABRTD
-          "b reset_vector\n" // ARM4_XRQ_RESV1
-          "b interrupt_vector\n" // ARM4_XRQ_IRQ
-          "b fast_interrupt_vector\n" // ARM4_XRQ_FIQ
+          "b software_interrupt_vector\n"    // ARM4_XRQ_SWINT
+          "b prefetch_abort_vector\n"        // ARM4_XRQ_ABRTP
+          "b data_abort_vector\n"            // ARM4_XRQ_ABRTD
+          "b reset_vector\n"                 // ARM4_XRQ_RESV1
+          "b interrupt_vector\n"             // ARM4_XRQ_IRQ
+          "b fast_interrupt_vector\n"        // ARM4_XRQ_FIQ
         );
       }
 
