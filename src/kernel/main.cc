@@ -12,7 +12,6 @@ extern "C" void kernel_main(uint32_t boot_device, uint32_t machine_type, const v
 
   (void) boot_device;
   (void) machine_type;
-  (void) atags;
 
   kernel::hw::uart::init();
   kernel::hw::atags::init(atags);
