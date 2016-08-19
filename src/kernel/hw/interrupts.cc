@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string.h>
+
 #include "interrupts.hh"
 #include "kernel/utils/debug.hh"
 
@@ -108,7 +110,7 @@ namespace kernel {
        * vector is clearly an error. Also, resetting the Pi will reset VideoCore,
        * and reboot.
        */
-      extern "C" __attribute__ ((naked, aligned(32), section(".text.interrupts"))) void vectors() {
+      static __attribute__ ((naked, aligned(32), section(".text.interrupts"))) void vectors_start() {
         asm volatile(
           "b reset_vector\n" // ARM4_XRQ_RESET
           "b undefined_instruction_vector\n" // ARM4_XRQ_UNDEF
@@ -121,12 +123,16 @@ namespace kernel {
         );
       }
 
-      void init() {
-        // Set interrupt base register
-        DEBUG("zz " << (const void *)&vectors);
-        asm volatile("mcr p15, 0, %[addr], c12, c0, 0" : : [addr] "r" (&vectors));
+      static __attribute__ ((naked, section(".text.interrupts"))) void vectors_end() {
+      }
 
-        // Turn on interrupts
+      void init() {
+        // move interrupt table to 0x0
+        const auto pvectors_start = reinterpret_cast<const char *>(&vectors_start);
+        const auto pvectors_end = reinterpret_cast<const char *>(&vectors_end);
+        uint32_t size = pvectors_end - pvectors_start;
+        memcpy(reinterpret_cast<void *>(0), pvectors_start, size);
+
         enable();
       }
 
