@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "kernel/kernel-main.hh"
+#include "kernel/platform.hh"
 
 namespace kernel {
 
@@ -22,6 +22,6 @@ namespace kernel {
     init_bss();
     _init();
 
-    kernel::kernel_main::get().run(boot_device, machine_type, atags);
+    kernel::platform::get().run(boot_device, machine_type, atags);
   }
 }
