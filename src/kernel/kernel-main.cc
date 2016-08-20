@@ -6,6 +6,7 @@
 #include "kernel/hw/uart.hh"
 #include "kernel/hw/atags.hh"
 #include "kernel/hw/interrupts.hh"
+#include "kernel/hw/memory.hh"
 #include "kernel/utils/debug.hh"
 
 namespace kernel {
@@ -22,6 +23,7 @@ namespace kernel {
     kernel::hw::uart::init();
     kernel::hw::atags::init(patags);
     kernel::hw::interrupts::init();
+    kernel::hw::memory::init();
 
     DEBUG("Hello, kernel World!");
   }
