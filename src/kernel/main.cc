@@ -22,7 +22,6 @@ namespace kernel {
     init_bss();
     _init();
 
-    kernel::kernel_main inst;
-    inst.run(boot_device, machine_type, atags);
+    kernel::kernel_main::get().run(boot_device, machine_type, atags);
   }
 }

@@ -7,7 +7,6 @@ namespace kernel {
   class kernel_main : public utils::non_copyable {
 
   public:
-    explicit kernel_main();
     static kernel_main &get();
 
     void run(const uint32_t &pboot_device, const uint32_t &pmachine_type, const void *patags);

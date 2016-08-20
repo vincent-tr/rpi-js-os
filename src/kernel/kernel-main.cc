@@ -9,14 +9,10 @@
 #include "kernel/utils/debug.hh"
 
 namespace kernel {
-  static kernel_main *instance;
-
-  kernel_main::kernel_main() {
-    instance = this;
-  }
+  static kernel_main instance;
 
   kernel_main &kernel_main::get() {
-    return *instance;
+    return instance;
   }
 
   void kernel_main::run(const uint32_t &pboot_device, const uint32_t &pmachine_type, const void *patags) {
