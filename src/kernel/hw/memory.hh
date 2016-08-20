@@ -18,10 +18,10 @@ namespace kernel {
         }
 
         static page alloc();
-        static void free(page &p);
+        void free();
       };
 
-      void init();
+      void init(const uint32_t &page_size, const uint32_t &ram_size);
     }
   }
 }
