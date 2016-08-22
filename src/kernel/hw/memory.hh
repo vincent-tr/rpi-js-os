@@ -6,14 +6,14 @@ namespace kernel {
     namespace memory {
 
       class page {
-        void *address;
+        uint32_t address;
 
       public:
-        explicit inline page(void *paddr)
+        explicit inline page(const uint32_t &paddr)
          : address(paddr) {
         }
 
-        explicit inline operator void*() const {
+        explicit inline operator uint32_t() const {
           return address;
         }
 
@@ -21,7 +21,7 @@ namespace kernel {
         void free();
       };
 
-      void init(const uint32_t &page_size, const uint32_t &ram_size);
+      void init(uint32_t &desc_begin, uint32_t &desc_end);
     }
   }
 }

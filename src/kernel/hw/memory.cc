@@ -2,33 +2,35 @@
 #include <stdint.h>
 
 #include "memory.hh"
+#include "kernel/utils/placement-new.hh"
 #include "kernel/utils/debug.hh"
 #include "kernel/utils/list.hh"
+#include "kernel/platform.hh"
 
 namespace kernel {
   namespace hw {
     namespace memory {
 
       class page_info : public utils::list<page_info>::node {
-        void *_address;
+        uint32_t _address;
         bool _used;
 
       public:
-        explicit inline page_info(void *paddress)
+        explicit inline page_info(const uint32_t &paddress)
          : _address(paddress) {
         }
 
-        inline void *address() const {
+        inline const uint32_t &address() const {
           return _address;
         }
 
-        inline bool used() const {
+        inline const bool &used() const {
           return _used;
         }
 
         void alloc();
         void free();
-        static inline page_info *find(const void *address);
+        static inline page_info *find(const uint32_t &address);
       };
 
       extern "C" page_info __end;
@@ -50,8 +52,9 @@ namespace kernel {
         free_pages.add(this);
       }
 
-      inline page_info *page_info::find(const void *address) {
-        // TODO
+      inline page_info *page_info::find(const uint32_t &address) {
+        const uint32_t &page_size = kernel::platform::get().page_size();
+        return pages + (address / page_size);
       }
 
       page page::alloc() {
@@ -66,8 +69,19 @@ namespace kernel {
         pi->free();
       }
 
-      void init(const uint32_t &page_size, const uint32_t &ram_size) {
-        // TODO
+      void init(uint32_t &pages_begin, uint32_t &page_end) {
+        const uint32_t &page_size = kernel::platform::get().page_size();
+        const uint32_t &ram_size = kernel::platform::get().ram_size();
+        //ASSERT(page_size == 4096);
+
+        page_info *current=pages;
+        for(uint32_t addr = 0; addr<ram_size; ++current, addr += page_size) {
+          new (current) page_info(addr);
+          free_pages.add(current);
+        }
+
+        pages_begin = reinterpret_cast<uint32_t>(pages);
+        page_end = reinterpret_cast<uint32_t>(current);
       }
     }
   }
