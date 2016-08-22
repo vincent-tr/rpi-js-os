@@ -28,6 +28,8 @@ namespace kernel {
     kernel::hw::memory::init(_hw_mem_desc_begin, _hw_mem_desc_end);
 
     DEBUG("Hello, kernel World!");
+
+    DEBUG("TODO: tests on phys mem");
   }
 
   void platform::parse_atags() {
