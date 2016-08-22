@@ -8,8 +8,12 @@ namespace kernel {
   namespace utils {
 
     void panic(const char *msg) {
+
       hw::interrupts::disable();
+
+      (void)msg;
       DEBUG("PANIC: " << msg);
+
       while(true);
     }
   }
