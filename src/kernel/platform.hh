@@ -6,12 +6,12 @@
 namespace kernel {
   class platform : public utils::non_copyable {
 
+    void parse_atags();
+
   public:
     static platform &get();
 
     void run(const uint32_t &pboot_device, const uint32_t &pmachine_type, const void *patags);
-
-    void parse_atags();
 
   private:
     uint32_t _boot_device;

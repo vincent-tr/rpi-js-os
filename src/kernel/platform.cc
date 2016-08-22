@@ -10,27 +10,6 @@
 #include "kernel/utils/debug.hh"
 
 namespace kernel {
-  static platform instance;
-
-  platform &platform::get() {
-    return instance;
-  }
-
-  void platform::run(const uint32_t &pboot_device, const uint32_t &pmachine_type, const void *patags) {
-    _boot_device = pboot_device;
-    _machine_type = pmachine_type;
-
-    kernel::hw::uart::init();
-    kernel::hw::atags::init(patags);
-    parse_atags();
-
-    kernel::hw::interrupts::init();
-    kernel::hw::memory::init(_hw_mem_desc_begin, _hw_mem_desc_end);
-
-    DEBUG("Hello, kernel World!");
-
-    DEBUG("TODO: tests on phys mem");
-  }
 
   void platform::parse_atags() {
     for(hw::atags::reader r; r; ++r) {
@@ -71,5 +50,27 @@ namespace kernel {
           break;
       }
     }
+  }
+
+  static platform instance;
+
+  platform &platform::get() {
+    return instance;
+  }
+
+  void platform::run(const uint32_t &pboot_device, const uint32_t &pmachine_type, const void *patags) {
+    _boot_device = pboot_device;
+    _machine_type = pmachine_type;
+
+    kernel::hw::uart::init();
+    kernel::hw::atags::init(patags);
+    parse_atags();
+
+    kernel::hw::interrupts::init();
+    kernel::hw::memory::init(_hw_mem_desc_begin, _hw_mem_desc_end);
+
+    DEBUG("Hello, kernel World!");
+
+    DEBUG("TODO: tests on phys mem");
   }
 }
