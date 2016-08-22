@@ -47,7 +47,7 @@ namespace kernel {
           solution.
       */
       extern "C" void __attribute__((naked, interrupt("ABORT"), section(".text.interrupts"))) prefetch_abort_vector() {
-        DEBUG("prefetch_abort_vector");
+        DEBUG("prefetch_abort_vector"); // page fault (code)
         for(;;);
       }
 
@@ -57,7 +57,7 @@ namespace kernel {
           solution.
       */
       extern "C" void __attribute__((naked, interrupt("ABORT"), section(".text.interrupts"))) data_abort_vector() {
-        DEBUG("data_abort_vector");
+        DEBUG("data_abort_vector"); // page fault (data)
         for(;;);
       }
 
