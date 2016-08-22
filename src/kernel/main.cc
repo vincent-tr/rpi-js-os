@@ -23,5 +23,7 @@ namespace kernel {
     _init();
 
     kernel::platform::get().run(boot_device, machine_type, atags);
+
+    while(true);
   }
 }

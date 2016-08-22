@@ -17,8 +17,3 @@ _start:
   // Call main
   ldr r3, =main
   blx r3
-
-  // halt
-halt:
-  wfe
-  b halt
