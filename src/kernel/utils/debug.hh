@@ -10,6 +10,10 @@
 #ifdef DEBUG_ENABLED
 #define DEBUG(expr) (kernel::utils::details::debug(__FILE__, __LINE__) << expr)
 
+#define ASSERT(expr) ((void)((expr) || ( \
+  (kernel::utils::details::debug(__FILE__, __LINE__) << "assertion failed: " << #expr).fatal(), \
+  false)))
+
 namespace kernel {
   namespace utils {
     namespace details {
@@ -22,6 +26,8 @@ namespace kernel {
         debug &operator << (const char *str);
         debug &operator << (const int &val);
         debug &operator << (const void *ptr);
+
+        void fatal();
       };
     }
   }
@@ -29,6 +35,7 @@ namespace kernel {
 
 #else // DEBUG_ENABLED
 #define DEBUG(expr)
+#define ASSERT(expr)
 #endif // DEBUG_ENABLED
 
 #endif // KERNEL_UTILS_DEBUG_HH

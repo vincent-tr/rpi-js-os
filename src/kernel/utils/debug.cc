@@ -6,6 +6,7 @@
 
 #include "kernel/hw/uart.hh"
 #include "kernel/utils/debug.hh"
+#include "kernel/utils/panic.hh"
 
 #ifdef DEBUG_ENABLED
 
@@ -19,6 +20,11 @@ namespace kernel {
 
       debug::~debug() {
         *this << "\n";
+      }
+
+      void debug::fatal() {
+        *this << "\n";
+        panic("assertion failed!");
       }
 
       debug &debug::operator << (const char *str) {
