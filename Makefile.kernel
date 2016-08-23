@@ -15,7 +15,7 @@ LDFLAGS = -ffreestanding -O2 -nostdlib -T src/linker-$(CONFIG).ld
 
 CRTBEGIN_OBJ:=$(shell $(CC) $(CRTFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJ:=$(shell $(CC) $(CRTFLAGS) -print-file-name=crtend.o)
-KERNEL_SOURCES:=$(shell $(FIND) src/kernel -name '*.cc')
+KERNEL_SOURCES:=$(shell $(FIND) src -name '*.cc')
 KERNEL_OBJECTS:=$(patsubst %.cc,build/$(CONFIG)/%.o,$(subst /,_,$(patsubst src/%,%,$(KERNEL_SOURCES))))
 
 print-%  : ; @echo $* = $($*)
