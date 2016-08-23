@@ -8,6 +8,7 @@
 #include "kernel/hw/interrupts.hh"
 #include "kernel/hw/memory.hh"
 #include "kernel/utils/debug.hh"
+#include "test/test.hh"
 
 namespace kernel {
 
@@ -50,6 +51,10 @@ namespace kernel {
           break;
       }
     }
+  }
+
+  void platform::test() {
+    test::hw_memory();
   }
 
   static platform instance;

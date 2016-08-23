@@ -7,6 +7,7 @@ namespace kernel {
   class platform : public utils::non_copyable {
 
     void parse_atags();
+    void test();
 
   public:
     static platform &get();
