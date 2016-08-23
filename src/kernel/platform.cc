@@ -54,6 +54,7 @@ namespace kernel {
   }
 
   void platform::test() {
+    test::utils_list();
     test::hw_memory();
   }
 

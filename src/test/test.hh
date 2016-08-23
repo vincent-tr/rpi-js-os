@@ -9,10 +9,12 @@ namespace test {
 
 #ifdef TEST_ENABLED
 
+  void utils_list();
   void hw_memory();
 
 #else // TEST_ENABLED
 
+  inline void utils_list() { }
   inline void hw_memory() { }
 
 #endif // TEST_ENABLED
