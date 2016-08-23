@@ -77,7 +77,5 @@ namespace kernel {
     test();
 
     DEBUG("Hello, kernel World!");
-
-    DEBUG("TODO: tests on phys mem");
   }
 }
