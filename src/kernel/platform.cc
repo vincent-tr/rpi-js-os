@@ -74,6 +74,8 @@ namespace kernel {
     kernel::hw::interrupts::init();
     kernel::hw::memory::init(_hw_mem_desc_begin, _hw_mem_desc_end);
 
+    test();
+
     DEBUG("Hello, kernel World!");
 
     DEBUG("TODO: tests on phys mem");
