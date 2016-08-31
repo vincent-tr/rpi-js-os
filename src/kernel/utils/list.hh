@@ -19,66 +19,72 @@ namespace kernel {
       class iterator_type {
         T *current;
         T *last;
-        bool valid;
 
       public:
-        explicit iterator_type(T *head)
+        explicit inline iterator_type(T *head)
          : current(head),
-           last(head ? head->prev : nullptr),
-           valid(head) {
+           last(head ? head->prev : nullptr) {
         }
 
-        iterator_type& operator++() {
+        inline iterator_type& operator++() {
           if(current == last) {
-            valid = false;
+            current = nullptr;
+            return *this;
           }
           current = current->next;
           return *this;
         }
 
         inline operator bool() const {
-          return valid;
-        }
-
-        T *operator*() const {
           return current;
         }
 
-        T *operator->() const {
+        inline T *operator*() const {
           return current;
+        }
+
+        inline T *operator->() const {
+          return current;
+        }
+
+        inline bool operator==(const iterator_type &other) const {
+          return current = other.current;
         }
       };
 
       class const_iterator_type {
         const T *current;
         const T *last;
-        bool valid;
 
       public:
-        explicit const_iterator_type(const T *head)
+        explicit inline const_iterator_type(const T *head)
          : current(head),
-           last(head ? head->prev : nullptr),
-           valid(head) {
+           last(head ? head->prev : nullptr) {
         }
 
-        const_iterator_type& operator++() {
+        inline const_iterator_type& operator++() {
           if(current == last) {
-            valid = false;
+            current = nullptr;
+            return *this;
           }
           current = current->next;
           return *this;
         }
 
         inline operator bool() const {
-          return valid;
-        }
-
-        const T *operator*() const {
           return current;
         }
 
-        const T *operator->() const {
+        inline const T *operator*() const {
           return current;
+        }
+
+        inline const T *operator->() const {
+          return current;
+        }
+
+        inline bool operator==(const const_iterator_type &other) const {
+          return current = other.current;
         }
       };
 
@@ -91,6 +97,12 @@ namespace kernel {
           list_head = node->prev = node->next = node;
           return;
         }
+
+        auto last = list_head->prev;
+        last->next = node;
+        node->prev = last;
+        list_head->prev = node;
+        node->next = list_head;
       }
 
       inline void remove(T *node) {
@@ -133,12 +145,20 @@ namespace kernel {
         return count;
       }
 
-      inline iterator_type iterator() {
+      inline iterator_type begin() {
         return iterator_type(list_head);
       }
 
-      inline const_iterator_type iterator() const {
+      inline const_iterator_type begin() const {
         return const_iterator_type(list_head);
+      }
+
+      inline iterator_type end() {
+        return iterator_type(nullptr);
+      }
+
+      inline const_iterator_type end() const {
+        return const_iterator_type(nullptr);
       }
     };
 
