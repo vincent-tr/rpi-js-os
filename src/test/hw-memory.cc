@@ -29,10 +29,8 @@ namespace test {
     ppage *current;
     uint32_t num_alloc_ppages = 0, num_free_ppages = 0;
     const uint32_t &page_size = kernel::platform::get().page_size();
-    const uint32_t pages_count = kernel::platform::get().ram_size() / page_size;
+    const uint32_t pages_count = (kernel::platform::get().ram_size() - kernel::platform::get().hw_mem_desc_end()) / page_size;
 
-    DEBUG("page begin: " << kernel::platform::get().hw_mem_desc_begin());
-    DEBUG("page end: " << kernel::platform::get().hw_mem_desc_end());
     DEBUG("page size: " << page_size);
     DEBUG("pages count: " << pages_count);
 
