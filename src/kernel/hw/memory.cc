@@ -82,6 +82,8 @@ namespace kernel {
 
         pages_begin = reinterpret_cast<uint32_t>(pages);
         page_end = reinterpret_cast<uint32_t>(current);
+
+        while((uint32_t)page::alloc() + page_size < page_end);
       }
     }
   }
