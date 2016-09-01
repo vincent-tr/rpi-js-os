@@ -44,12 +44,14 @@ namespace kernel {
         ASSERT(!_used);
         free_pages.remove(this);
         used_pages.add(this);
+        _used = true;
       }
 
       inline void page_info::free() {
         ASSERT(_used);
         used_pages.remove(this);
         free_pages.add(this);
+        _used = false;
       }
 
       inline page_info *page_info::find(const uint32_t &address) {
