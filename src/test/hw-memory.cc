@@ -41,7 +41,7 @@ namespace test {
       current = reinterpret_cast<ppage*>(static_cast<uint32_t>(kernel::hw::memory::page::alloc()));
 
       // Print the allocation status
-      DEBUG("Could allocate " << num_alloc_ppages << " pages");
+      DEBUG("Could allocate " << num_alloc_ppages << " pages, last at " << current);
 
       // We fill this page with its address
       for (int i = 0 ; i < MY_PPAGE_NUM_INT ; i++)
