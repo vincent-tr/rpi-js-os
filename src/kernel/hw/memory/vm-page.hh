@@ -5,8 +5,9 @@ namespace kernel {
   namespace hw {
     namespace memory {
 
-      enum vm_protection {
-
+      struct vm_protection {
+        bool read: 1;
+        bool write: 1;
       };
 
       class vm_page {
