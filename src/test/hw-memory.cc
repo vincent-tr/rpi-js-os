@@ -3,6 +3,7 @@
 
 #include "kernel/utils/debug.hh"
 #include "kernel/hw/memory/phys-page.hh"
+#include "kernel/hw/memory/vm-page.hh"
 #include "kernel/platform.hh"
 #include "kernel/utils/list.hh"
 #include "kernel/utils/panic.hh"

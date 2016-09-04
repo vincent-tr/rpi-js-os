@@ -13,21 +13,21 @@ namespace kernel {
         uint32_t address;
 
       public:
-        explicit inline page(const uint32_t &vaddr)
-         : address(paddr) {
+        explicit inline vm_page(const uint32_t &vaddr)
+         : address(vaddr) {
         }
 
         explicit inline operator uint32_t() const {
           return address;
         }
 
-        uint32_t phys() const;
-        vm_protection protection() const;
+        phys_page phys() const;
+        const vm_protection &protection() const;
 
-        void map();
+        void map(const vm_protection &prot, const phys_page &phys);
         void unmap();
 
-        static void init();
+        static void init(uint32_t &desc_end);
       };
     }
   }
