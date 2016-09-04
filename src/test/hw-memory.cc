@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 #include "kernel/utils/debug.hh"
-#include "kernel/hw/memory.hh"
+#include "kernel/hw/memory/phys-page.hh"
 #include "kernel/platform.hh"
 #include "kernel/utils/list.hh"
 #include "kernel/utils/panic.hh"
@@ -36,7 +36,7 @@ namespace test {
 
     while(num_alloc_ppages < pages_count) {
       ++num_alloc_ppages;
-      current = reinterpret_cast<ppage*>(static_cast<uint32_t>(kernel::hw::memory::page::alloc()));
+      current = reinterpret_cast<ppage*>(static_cast<uint32_t>(kernel::hw::memory::phys_page::alloc()));
 
       // Print the allocation status
       if(!(num_alloc_ppages % 10000) || num_alloc_ppages == pages_count) {
@@ -67,7 +67,7 @@ namespace test {
 
 
       // Release the descriptor
-      kernel::hw::memory::page(reinterpret_cast<uint32_t>(current)).free();
+      kernel::hw::memory::phys_page(reinterpret_cast<uint32_t>(current)).free();
 
       // Print the deallocation status
       num_free_ppages++;

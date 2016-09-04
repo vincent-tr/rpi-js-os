@@ -5,11 +5,11 @@ namespace kernel {
   namespace hw {
     namespace memory {
 
-      class page {
+      class phys_page {
         uint32_t address;
 
       public:
-        explicit inline page(const uint32_t &paddr)
+        explicit inline phys_page(const uint32_t &paddr)
          : address(paddr) {
         }
 
@@ -17,11 +17,12 @@ namespace kernel {
           return address;
         }
 
-        static page alloc();
+        static phys_page alloc();
         void free();
+
+        static void init(uint32_t &desc_begin, uint32_t &desc_end);
       };
 
-      void init(uint32_t &desc_begin, uint32_t &desc_end);
     }
   }
 }

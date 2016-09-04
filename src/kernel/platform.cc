@@ -6,7 +6,7 @@
 #include "kernel/hw/uart.hh"
 #include "kernel/hw/atags.hh"
 #include "kernel/hw/interrupts.hh"
-#include "kernel/hw/memory.hh"
+#include "kernel/hw/memory/phys-page.hh"
 #include "kernel/utils/debug.hh"
 #include "test/test.hh"
 
@@ -73,7 +73,7 @@ namespace kernel {
     parse_atags();
 
     kernel::hw::interrupts::init();
-    kernel::hw::memory::init(_hw_mem_desc_begin, _hw_mem_desc_end);
+    kernel::hw::memory::phys_page::init(_hw_mem_desc_begin, _hw_mem_desc_end);
 
     test();
 
