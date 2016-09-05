@@ -12,6 +12,14 @@ namespace kernel {
   namespace hw {
     namespace memory {
 
+      struct vm_region_info {
+
+      };
+
+      struct vm_page_info {
+
+      };
+
       phys_page vm_page::phys() const {
         // TODO
       }
