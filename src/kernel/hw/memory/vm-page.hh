@@ -8,7 +8,7 @@ namespace kernel {
       struct vm_protection {
         bool read: 1;
         bool write: 1;
-        bool execute: 1;
+        //bool execute: 1;
       };
 
       class vm_page {
