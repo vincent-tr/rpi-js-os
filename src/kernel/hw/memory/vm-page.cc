@@ -97,8 +97,8 @@ namespace kernel {
         // TODO
       }
 
-      void vm_page::init(uint32_t &desc_end) {
         // TODO
+      void vm_page::init() {
       }
     }
   }

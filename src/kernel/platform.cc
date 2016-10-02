@@ -75,7 +75,7 @@ namespace kernel {
 
     kernel::hw::interrupts::init();
     kernel::hw::memory::phys_page::init(_hw_mem_desc_begin, _hw_mem_desc_end);
-    kernel::hw::memory::vm_page::init(_hw_mmu_desc_end);
+    kernel::hw::memory::vm_page::init();
 
     test();
 

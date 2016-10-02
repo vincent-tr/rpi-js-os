@@ -29,7 +29,7 @@ namespace kernel {
         void map(const vm_protection &prot, const phys_page &phys);
         void unmap();
 
-        static void init(uint32_t &desc_end);
+        static void init();
       };
     }
   }

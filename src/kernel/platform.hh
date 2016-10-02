@@ -25,7 +25,6 @@ namespace kernel {
     uint32_t _revision;
     uint32_t _hw_mem_desc_begin;
     uint32_t _hw_mem_desc_end;
-    uint32_t _hw_mmu_desc_end;
 
   public:
     inline const uint32_t &boot_device() const { return _boot_device; }
@@ -38,7 +37,6 @@ namespace kernel {
     inline const uint32_t &revision() const { return _revision; }
     inline const uint32_t &hw_mem_desc_begin() const { return _hw_mem_desc_begin; }
     inline const uint32_t &hw_mem_desc_end() const { return _hw_mem_desc_end; }
-    inline const uint32_t &hw_mmu_desc_end() const { return _hw_mmu_desc_end; }
   };
 }
 
