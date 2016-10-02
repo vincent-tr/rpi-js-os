@@ -98,24 +98,29 @@ namespace kernel {
       }
 
       void vm_page::init() {
-        for(auto *desc = first_level_descriptors->descriptors; desc < first_level_descriptors->descriptors + 4096; ++desc) {
-          desc->type = 1;
-          desc->reserved0 = 4;
-          desc->domain = 0;
-          desc->reserved1 = 0;
-          desc->next_descriptor_base_address = 0; // TODO
-        }
+        auto *first_desc = first_level_descriptors->descriptors;
+        auto *second_table = second_level_descriptors;
+        uint32_t page_address++;
 
-        for(auto *table = second_level_descriptors; table < second_level_descriptors + 4096; ++table) {
-          for(auto *desc = table->descriptors; desc < table->descriptors + 256; ++desc) {
-            desc->type = 2;
-            desc->bufferable = 1; // TODO
-            desc->cacheable = 1; // TODO
-            desc->access_permissions_0 = 0;
-            desc->access_permissions_1 = 0;
-            desc->access_permissions_2 = 0;
-            desc->access_permissions_3 = 0;
-            desc->page_base_address = 0; // TODO
+        for(;
+            first_desc < first_level_descriptors->descriptors + 4096;
+            ++first_desc,
+            ++second_table) {
+          first_desc->type = 1;
+          first_desc->reserved0 = 4;
+          first_desc->domain = 0;
+          first_desc->reserved1 = 0;
+          first_desc->next_descriptor_base_address = reinterpret_cast<uint32_t>(second_table) >> 10;
+
+          for(auto *second_desc = second_table->descriptors; second_desc < second_table->descriptors + 256; ++second_desc) {
+            second_desc->type = 2;
+            second_desc->bufferable = 1; // TODO
+            second_desc->cacheable = 1; // TODO
+            second_desc->access_permissions_0 = 0;
+            second_desc->access_permissions_1 = 0;
+            second_desc->access_permissions_2 = 0;
+            second_desc->access_permissions_3 = 0;
+            second_desc->page_base_address = page_address++;
           }
         }
 
