@@ -97,7 +97,6 @@ namespace kernel {
         // TODO
       }
 
-        // TODO
       void vm_page::init() {
         for(auto *desc = first_level_descriptors->descriptors; desc < first_level_descriptors->descriptors + 4096; ++desc) {
           desc->type = 1;
@@ -119,6 +118,9 @@ namespace kernel {
             desc->page_base_address = 0; // TODO
           }
         }
+
+        // TODO: init kernel mapping zone
+        // TODO: activate mmu
       }
     }
   }
