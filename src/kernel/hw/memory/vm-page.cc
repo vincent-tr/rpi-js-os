@@ -79,7 +79,7 @@ namespace kernel {
       };
 
       static first_level_descriptor_table first_level_descriptors[1];
-      static small_page_table_descriptor second_level_descriptors[4096];
+      static second_level_descriptor_table second_level_descriptors[4096];
 
       phys_page vm_page::phys() const {
         // TODO
