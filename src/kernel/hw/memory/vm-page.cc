@@ -99,6 +99,26 @@ namespace kernel {
 
         // TODO
       void vm_page::init() {
+        for(auto *desc = first_level_descriptors->descriptors; desc < first_level_descriptors->descriptors + 4096; ++desc) {
+          desc->type = 1;
+          desc->reserved0 = 4;
+          desc->domain = 0;
+          desc->reserved1 = 0;
+          desc->next_descriptor_base_address = 0; // TODO
+        }
+
+        for(auto *table = second_level_descriptors; table < second_level_descriptors + 4096; ++table) {
+          for(auto *desc = table->descriptors; desc < table->descriptors + 256; ++desc) {
+            desc->type = 2;
+            desc->bufferable = 1; // TODO
+            desc->cacheable = 1; // TODO
+            desc->access_permissions_0 = 0;
+            desc->access_permissions_1 = 0;
+            desc->access_permissions_2 = 0;
+            desc->access_permissions_3 = 0;
+            desc->page_base_address = 0; // TODO
+          }
+        }
       }
     }
   }
