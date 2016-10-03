@@ -100,7 +100,6 @@ namespace kernel {
       void vm_page::init() {
         auto *first_desc = first_level_descriptors->descriptors;
         auto *second_table = second_level_descriptors;
-        uint32_t page_address++;
 
         for(;
             first_desc < first_level_descriptors->descriptors + 4096;
@@ -120,7 +119,7 @@ namespace kernel {
             second_desc->access_permissions_1 = 0;
             second_desc->access_permissions_2 = 0;
             second_desc->access_permissions_3 = 0;
-            second_desc->page_base_address = page_address++;
+            second_desc->page_base_address = 0;
           }
         }
 
