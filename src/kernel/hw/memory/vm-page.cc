@@ -123,7 +123,12 @@ namespace kernel {
           }
         }
 
-        // TODO: init kernel mapping zone
+        // for now map from 0 to hw_mem_desc_end as r/w identical
+        // vm-regions will tune it properly
+        for(uint32_t addr = 0; addr < kernel::platform::get().hw_mem_desc_end(); addr += kernel::platform::get().page_size()) {
+          vm_page(addr).map(vm_protection{1, 1}, phys_page(addr));
+        }
+
         // TODO: activate mmu
       }
     }
