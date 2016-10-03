@@ -81,20 +81,40 @@ namespace kernel {
       static first_level_descriptor_table first_level_descriptors[1];
       static second_level_descriptor_table second_level_descriptors[4096];
 
-      phys_page vm_page::phys() const {
-        // TODO
+      static inline small_page_table_descriptor* vaddr_to_descriptor(const uint32_t &vaddr) {
+        return second_level_descriptors[vaddr >> 20].descriptors + ((vaddr >> 12) & 0xFF);
       }
 
-      const vm_protection &vm_page::protection() const {
-        // TODO
+      phys_page vm_page::phys() const {
+        return phys_page(vaddr_to_descriptor(address)->page_base_address);
+      }
+
+      vm_protection vm_page::protection() const {
+        const auto * desc = vaddr_to_descriptor(address);
+        switch(desc->access_permissions_0) {
+          case access_permission::read_only:  return vm_protection{1, 0};
+          case access_permission::read_write: return vm_protection{1, 1};
+          default:                            return vm_protection{0, 0};
+        }
       }
 
       void vm_page::map(const vm_protection &prot, const phys_page &phys) {
-        // TODO
+        auto * desc = vaddr_to_descriptor(address);
+        access_permission ap = prot.write ? access_permission::read_write : (prot.read ? access_permission::read_only : access_permission::none);
+        desc->access_permissions_0 = ap;
+        desc->access_permissions_1 = ap;
+        desc->access_permissions_2 = ap;
+        desc->access_permissions_3 = ap;
+        desc->page_base_address = static_cast<uint32_t>(phys);
       }
 
       void vm_page::unmap() {
-        // TODO
+        auto * desc = vaddr_to_descriptor(address);
+        desc->access_permissions_0 = access_permission::none;
+        desc->access_permissions_1 = access_permission::none;
+        desc->access_permissions_2 = access_permission::none;
+        desc->access_permissions_3 = access_permission::none;
+        desc->page_base_address = 0;
       }
 
       void vm_page::init() {
@@ -115,10 +135,10 @@ namespace kernel {
             second_desc->type = 2;
             second_desc->bufferable = 1; // TODO
             second_desc->cacheable = 1; // TODO
-            second_desc->access_permissions_0 = 0;
-            second_desc->access_permissions_1 = 0;
-            second_desc->access_permissions_2 = 0;
-            second_desc->access_permissions_3 = 0;
+            second_desc->access_permissions_0 = access_permission::none;
+            second_desc->access_permissions_1 = access_permission::none;
+            second_desc->access_permissions_2 = access_permission::none;
+            second_desc->access_permissions_3 = access_permission::none;
             second_desc->page_base_address = 0;
           }
         }

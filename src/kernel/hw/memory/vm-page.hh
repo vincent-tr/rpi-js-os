@@ -24,7 +24,7 @@ namespace kernel {
         }
 
         phys_page phys() const;
-        const vm_protection &protection() const;
+        vm_protection protection() const;
 
         void map(const vm_protection &prot, const phys_page &phys);
         void unmap();
