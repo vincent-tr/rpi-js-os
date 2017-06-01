@@ -1,5 +1,5 @@
         /* Run-time exception support */
-#if !defined(__thumb2__)
+#if !defined(__thumb2__) && !defined(__ARM_ARCH_6M__)
 #include "swi.h"
 
 /* .text is used instead of .section .text so it works with arm-aout too.  */
