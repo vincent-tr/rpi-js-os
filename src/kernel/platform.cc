@@ -7,6 +7,7 @@
 #include "kernel/hw/atags.hh"
 #include "kernel/hw/interrupts.hh"
 #include "kernel/hw/memory/phys-page.hh"
+#include "kernel/hw/memory/vm-protection.hh"
 #include "kernel/hw/memory/vm-page.hh"
 #include "kernel/utils/debug.hh"
 #include "test/test.hh"
