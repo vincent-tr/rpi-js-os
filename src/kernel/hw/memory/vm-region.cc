@@ -27,6 +27,23 @@ namespace kernel {
         explicit inline region_info(const uint32_t &vaddr, const uint32_t &plen, const vm_protection &pprot, const char *pname)
          : vm_region(vaddr, plen, pprot, pname) {
         }
+
+        void map() {
+          const uint32_t &page_size = kernel::platform::get().page_size();
+          for(uint32_t addr=address(); addr < address_end(); addr += page_size) {
+            vm_page page(addr);
+            page.map(protection(), phys_page::alloc());
+          }
+        }
+
+        void unmap() {
+          const uint32_t &page_size = kernel::platform::get().page_size();
+          for(uint32_t addr=address(); addr < address_end(); addr += page_size) {
+            vm_page page(addr);
+            page.phys().free();
+            page.unmap();
+          }
+        }
       };
 
       static utils::list<region_info> regions;
@@ -40,7 +57,6 @@ namespace kernel {
       static uint32_t internal_count = 0;
 
       static region_info *new_internal(const uint32_t &address, const uint32_t &len, const vm_protection &prot, const char *name);
-      static void map_region(region_info *ri);
       static void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name);
 
       void vm_region::init() {
@@ -83,7 +99,7 @@ TODO: permit allocation
         ASSERT(is_internal);
         region_info *ri = new_internal(address, len, prot, name);
 
-        map_region(ri);
+        ri->map();
 
         regions.add(ri);
 
@@ -96,23 +112,10 @@ TODO: permit allocation
         return new (ri) region_info(address, len, prot, name);
       }
 
-      void map_region(region_info *ri) {
-        const uint32_t &page_size = kernel::platform::get().page_size();
-        for(uint32_t addr=ri->address(); addr < ri->address_end(); addr += page_size) {
-          vm_page page(addr);
-          page.map(ri->protection(), phys_page::alloc());
-        }
-      }
-
       void vm_region::release(vm_region *region) {
         region_info *ri = static_cast<region_info *>(region);
 
-        const uint32_t &page_size = kernel::platform::get().page_size();
-        for(uint32_t addr=ri->address(); addr < ri->address_end(); addr += page_size) {
-          vm_page page(addr);
-          page.phys().free();
-          page.unmap();
-        }
+        ri->unmap();
 
         regions.remove(ri);
 
