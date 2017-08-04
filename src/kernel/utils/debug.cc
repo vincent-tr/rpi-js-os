@@ -41,6 +41,36 @@ namespace kernel {
         return (*this) << str;
       }
 
+      debug &debug::operator << (const int8_t &val) {
+        return (*this) << static_cast<int>(val);
+      }
+
+      debug &debug::operator << (const int16_t &val) {
+        return (*this) << static_cast<int>(val);
+      }
+
+      debug &debug::operator << (const int32_t &val) {
+        return (*this) << static_cast<int>(val);
+      }
+
+      debug &debug::operator << (const unsigned int &val) {
+        char str[16];
+        utoa(val, str, 10);
+        return (*this) << str;
+      }
+
+      debug &debug::operator << (const uint8_t &val) {
+        return (*this) << static_cast<unsigned int>(val);
+      }
+
+      debug &debug::operator << (const uint16_t &val) {
+        return (*this) << static_cast<unsigned int>(val);
+      }
+
+      debug &debug::operator << (const uint32_t &val) {
+        return (*this) << static_cast<unsigned int>(val);
+      }
+
       debug &debug::operator << (const void *ptr) {
         char buf[16];
         char str[16];

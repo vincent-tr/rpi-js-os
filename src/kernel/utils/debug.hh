@@ -25,6 +25,13 @@ namespace kernel {
 
         debug &operator << (const char *str);
         debug &operator << (const int &val);
+        debug &operator << (const int8_t &val);
+        debug &operator << (const int16_t &val);
+        debug &operator << (const int32_t &val);
+        debug &operator << (const unsigned int &val);
+        debug &operator << (const uint8_t &val);
+        debug &operator << (const uint16_t &val);
+        debug &operator << (const uint32_t &val);
         debug &operator << (const void *ptr);
 
         void fatal();
