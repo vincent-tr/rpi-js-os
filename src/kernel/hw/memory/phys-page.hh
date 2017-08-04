@@ -1,5 +1,5 @@
-#ifndef KERNEL_HW_MEMORY_HH
-#define KERNEL_HW_MEMORY_HH
+#ifndef KERNEL_HW_MEMORY_PHYS_PAGE_HH
+#define KERNEL_HW_MEMORY_PHYS_PAGE_HH
 
 namespace kernel {
   namespace hw {
@@ -27,4 +27,4 @@ namespace kernel {
   }
 }
 
-#endif // KERNEL_HW_MEMORY_HH
+#endif // KERNEL_HW_MEMORY_PHYS_PAGE_HH
