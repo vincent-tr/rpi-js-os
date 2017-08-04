@@ -149,7 +149,16 @@ namespace kernel {
           vm_page(addr).map(vm_protection{1, 1}, phys_page(addr));
         }
 
-        // TODO: activate mmu
+        // activate mmu
+        // Copy the page table address to cp15
+        asm volatile("mcr p15, 0, %0, c2, c0, 0" : : "r" (first_level_descriptors) : "memory");
+        // Set the access control to all-supervisor
+        asm volatile("mcr p15, 0, %0, c3, c0, 0" : : "r" (~0));
+        // Enable the MMU
+        uint32_t reg;
+        asm("mrc p15, 0, %0, c1, c0, 0" : "=r" (reg) : : "cc");
+        reg|=0x1;
+        asm volatile("mcr p15, 0, %0, c1, c0, 0" : : "r" (reg) : "cc");
       }
     }
   }
