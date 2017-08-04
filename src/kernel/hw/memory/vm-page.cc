@@ -2,6 +2,7 @@
 #include <stdint.h>
 
 #include "phys-page.hh"
+#include "vm-protection.hh"
 #include "vm-page.hh"
 #include "kernel/utils/placement-new.hh"
 #include "kernel/utils/debug.hh"

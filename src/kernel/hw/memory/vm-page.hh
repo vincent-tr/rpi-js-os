@@ -5,12 +5,6 @@ namespace kernel {
   namespace hw {
     namespace memory {
 
-      struct vm_protection {
-        bool read: 1;
-        bool write: 1;
-        //bool execute: 1;
-      };
-
       class vm_page {
         uint32_t address;
 
