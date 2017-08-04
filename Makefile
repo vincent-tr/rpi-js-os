@@ -32,7 +32,8 @@ qemu: $(KERNEL_BIN).qemu
 		-M versatilepb \
 		-no-reboot \
 		-nographic \
-		-append "kernel cmd line test"
+		-append "kernel cmd line test" \
+		-d guest_errors
 #    -serial stdio \
 #    -hda 2014-12-24-wheezy-raspbian.img
 
