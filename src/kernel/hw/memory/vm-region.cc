@@ -58,20 +58,25 @@ namespace kernel {
 
       static region_info *new_internal(const uint32_t &address, const uint32_t &len, const vm_protection &prot, const char *name);
       static void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name);
+      static void create_internal_region(const void *begin, const void *end, const bool &can_write, const char *name);
       static void insert_region(region_info *ri, region_info* prev = nullptr);
 
       void vm_region::init() {
         const auto &platform = kernel::platform::get();
-        create_internal_region(__text_start,                 __text_end,                 false, "kernel:text");
-        create_internal_region(__rodata_start,               __rodata_end,               false, "kernel:rodata");
-        create_internal_region(__data_start,                 __data_end,                 true,  "kernel:data");
-        create_internal_region(__bss_start,                  __bss_end,                  true,  "kernel:bss");
+        create_internal_region(&__text_start,                &__text_end,                false, "kernel:text");
+        create_internal_region(&__rodata_start,              &__rodata_end,              false, "kernel:rodata");
+        create_internal_region(&__data_start,                &__data_end,                true,  "kernel:data");
+        create_internal_region(&__bss_start,                 &__bss_end,                 true,  "kernel:bss");
         create_internal_region(platform.hw_mem_desc_begin(), platform.hw_mem_desc_end(), true,  "kernel:hw_mem_desc");
       }
 
       void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name) {
         region_info *ri = new_internal(begin, end - begin, can_write ? vm_protection{1, 1} : vm_protection{1, 0}, name);
         insert_region(ri);
+      }
+
+      void create_internal_region(const void *begin, const void *end, const bool &can_write, const char *name) {
+        create_internal_region(reinterpret_cast<uint32_t>(begin), reinterpret_cast<uint32_t>(end), can_write, name);
       }
 
       void insert_region(region_info *ri, region_info* prev) {
