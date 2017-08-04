@@ -133,8 +133,8 @@ namespace kernel {
 
           for(auto *second_desc = second_table->descriptors; second_desc < second_table->descriptors + 256; ++second_desc) {
             second_desc->type = 2;
-            second_desc->bufferable = 1; // TODO
-            second_desc->cacheable = 1; // TODO
+            second_desc->bufferable = 0; // TODO
+            second_desc->cacheable = 0; // TODO
             second_desc->access_permissions_0 = access_permission::none;
             second_desc->access_permissions_1 = access_permission::none;
             second_desc->access_permissions_2 = access_permission::none;
