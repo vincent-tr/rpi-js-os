@@ -14,6 +14,12 @@ namespace kernel {
         T *next;
 
         friend list<T>;
+
+      public:
+        inline T* next_node() { return next; }
+        inline const T* next_node() const { return next; }
+        inline T* prev_node() { return prev; }
+        inline const T* prev_node() const { return prev; }
       };
 
       class iterator_type {
