@@ -5,6 +5,7 @@
 #include "kernel/hw/memory/phys-page.hh"
 #include "kernel/hw/memory/vm-protection.hh"
 #include "kernel/hw/memory/vm-page.hh"
+#include "kernel/hw/memory/vm-region.hh"
 #include "kernel/platform.hh"
 #include "kernel/utils/list.hh"
 #include "kernel/utils/panic.hh"
@@ -88,6 +89,13 @@ namespace test {
 
   static void hw_region() {
     DEBUG("region test begin");
+
+    for(auto *region = kernel::hw::memory::vm_region::get_first(); region; region = kernel::hw::memory::vm_region::get_next(region)) {
+      DEBUG(
+        "region: " <<
+        reinterpret_cast<void*>(region->address()) << " -> " << reinterpret_cast<void*>(region->address_end()) <<
+        " (" << region->length() << ") : " << region->name());
+    }
 
     DEBUG("region test end");
   }

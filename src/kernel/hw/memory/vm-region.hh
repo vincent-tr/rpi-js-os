@@ -42,8 +42,12 @@ namespace kernel {
         static void init();
 
         static vm_region *find(const uint32_t &address);
+
         static vm_region *create(const uint32_t &len, const vm_protection &prot, const char *name, const bool &is_internal = false);
         static void release(vm_region *region);
+
+        static vm_region *get_first();
+        static vm_region *get_next(vm_region *region);
       };
     }
   }

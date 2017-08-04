@@ -158,6 +158,19 @@ TODO: permit allocation
         delete ri;
 */
       }
+
+      vm_region *vm_region::get_first() {
+        return regions.head();
+      }
+
+      vm_region *vm_region::get_next(vm_region *region) {
+        region_info *ri = static_cast<region_info *>(region);
+        auto next = ri->next_node();
+        if(next == regions.head()) {
+          return nullptr;
+        }
+        return next;
+      }
     }
   }
 }
