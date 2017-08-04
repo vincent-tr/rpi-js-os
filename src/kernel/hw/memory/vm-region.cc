@@ -58,6 +58,7 @@ namespace kernel {
 
       static region_info *new_internal(const uint32_t &address, const uint32_t &len, const vm_protection &prot, const char *name);
       static void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name);
+      static void insert_region(region_info *ri, region_info* prev = nullptr);
 
       void vm_region::init() {
         const auto &platform = kernel::platform::get();
@@ -70,13 +71,37 @@ namespace kernel {
 
       void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name) {
         region_info *ri = new_internal(begin, end - begin, can_write ? vm_protection{1, 1} : vm_protection{1, 0}, name);
-        regions.add(ri);
+        insert_region(ri);
+      }
+
+      void insert_region(region_info *ri, region_info* prev) {
+        if(regions.empty()) {
+          regions.add(ri);
+          return;
+        }
+
+        if(prev) {
+          regions.insert_after(prev, ri);
+          return;
+        }
+
+        for(region_info* rit : regions) {
+          if(rit->address() > ri->address()) {
+            regions.insert_before(rit, ri);
+            return;
+          }
+        }
+
+        regions.insert_tail(ri);
       }
 
       vm_region *vm_region::find(const uint32_t &address) {
-        for(region_info* region : regions) {
-          if(region->address() <= address && address < region->address_end()) {
-            return region;
+        for(region_info* ri : regions) {
+          if(ri->address() <= address && address < ri->address_end()) {
+            return ri;
+          }
+          if(ri->address() > address) {
+            break; // sorted list
           }
         }
 
@@ -84,12 +109,23 @@ namespace kernel {
       }
 
       vm_region *vm_region::create(const uint32_t &len, const vm_protection &prot, const char *name, const bool &is_internal) {
-        const uint32_t &page_size = kernel::platform::get().page_size();
 
-        uint32_t address = page_size; // forbid allocation at address 0
+        // find suitable place
+        region_info *prev = nullptr;
+        // we do not lookup before kernel mappings
+        for(region_info* rit : regions) {
+          if(rit == regions.tail()) {
+            prev = rit;
+            break;
+          }
+          if(rit->next_node()->address() - rit->address_end() <= len) {
+            prev = rit;
+            break;
+          }
+        }
 
-        // TODO: find suitable place
-
+        ASSERT(prev);
+        const uint32_t address = prev->address_end();
 /*
 TODO: permit allocation
         region_info *ri = is_internal ?
@@ -100,8 +136,7 @@ TODO: permit allocation
         region_info *ri = new_internal(address, len, prot, name);
 
         ri->map();
-
-        regions.add(ri);
+        insert_region(ri, prev);
 
         return ri;
       }
@@ -116,7 +151,6 @@ TODO: permit allocation
         region_info *ri = static_cast<region_info *>(region);
 
         ri->unmap();
-
         regions.remove(ri);
 
 /*
