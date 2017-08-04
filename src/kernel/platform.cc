@@ -9,6 +9,7 @@
 #include "kernel/hw/memory/phys-page.hh"
 #include "kernel/hw/memory/vm-protection.hh"
 #include "kernel/hw/memory/vm-page.hh"
+#include "kernel/hw/memory/vm-region.hh"
 #include "kernel/utils/debug.hh"
 #include "test/test.hh"
 
@@ -78,6 +79,7 @@ namespace kernel {
 
     kernel::hw::memory::phys_page::init(_hw_mem_desc_begin, _hw_mem_desc_end);
     kernel::hw::memory::vm_page::init();
+    kernel::hw::memory::vm_region::init();
 
     test();
 
