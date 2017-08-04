@@ -23,8 +23,8 @@ namespace test {
     uint32_t after[MY_PPAGE_NUM_INT];
   }; /* sizeof() Must be <= 4kB */
 
-  void hw_memory() {
-    DEBUG("test begin");
+  static void hw_phys() {
+    DEBUG("phys test begin");
 
     // We place the pages we did allocate here
     kernel::utils::list<ppage> list;
@@ -82,6 +82,21 @@ namespace test {
       << " bytes, could free " << num_free_ppages * page_size << " bytes");
 
     ASSERT(num_alloc_ppages == num_free_ppages);
+
+    DEBUG("phys test end");
+  }
+
+  static void hw_region() {
+    DEBUG("region test begin");
+
+    DEBUG("region test end");
+  }
+
+  void hw_memory() {
+    DEBUG("test begin");
+
+    hw_phys();
+    hw_region();
 
     DEBUG("test end");
   }
