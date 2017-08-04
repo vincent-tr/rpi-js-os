@@ -62,6 +62,36 @@ namespace test {
     ASSERT(list.empty());
     ASSERT(list.count() == 0);
 
+    list.add(&val2);
+    list.insert_before(&val2, &val1);
+    list.insert_after(&val2, &val3);
+
+    i=0;
+    for(auto node : list) {
+      ASSERT(node->value() == ++i);
+    }
+
+    list.remove(&val1);
+    list.remove(&val2);
+    list.remove(&val3);
+
+    ASSERT(list.empty());
+
+    list.add(&val2);
+    list.insert_head(&val1);
+    list.insert_tail(&val3);
+
+    i=0;
+    for(auto node : list) {
+      ASSERT(node->value() == ++i);
+    }
+
+    list.remove(&val1);
+    list.remove(&val2);
+    list.remove(&val3);
+
+    ASSERT(list.empty());
+
     DEBUG("test end");
   }
 

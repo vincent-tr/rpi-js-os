@@ -92,17 +92,64 @@ namespace kernel {
        : list_head(nullptr) {
       }
 
+    private:
+
+      inline bool check_insert_empty(T *node) {
+        if(list_head) {
+          return false;
+        }
+
+        list_head = node->prev = node->next = node;
+        return true;
+      }
+
+      inline void insert_node_after(T* reference_node, T *node) {
+        node->next = reference_node->next;
+        node->next->prev = node;
+        reference_node->next = node;
+        node->prev = reference_node;
+      }
+
+    public:
+
       inline void add(T *node) {
-        if(!list_head) {
-          list_head = node->prev = node->next = node;
+        insert_tail(node);
+      }
+
+      inline void insert_head(T *node) {
+        if(check_insert_empty(node)) {
           return;
         }
 
-        auto last = list_head->prev;
-        last->next = node;
-        node->prev = last;
-        list_head->prev = node;
-        node->next = list_head;
+        insert_node_after(list_head->prev, node);
+        list_head = node;
+      }
+
+      inline void insert_tail(T *node) {
+        if(check_insert_empty(node)) {
+          return;
+        }
+
+        insert_node_after(list_head->prev, node);
+      }
+
+      inline void insert_before(T* reference_node, T *node) {
+        if(check_insert_empty(node)) {
+          return;
+        }
+
+        insert_node_after(reference_node->prev, node);
+        if(list_head == reference_node) {
+          list_head = node;
+        }
+      }
+
+      inline void insert_after(T* reference_node, T *node) {
+        if(check_insert_empty(node)) {
+          return;
+        }
+
+        insert_node_after(reference_node, node);
       }
 
       inline void remove(T *node) {
