@@ -25,6 +25,7 @@ $(KERNEL_BIN).qemu:
 	$(COPY) build/qemu/$(KERNEL_BIN) $@
 
 qemu: $(KERNEL_BIN).qemu
+	echo "press 'ctrl+a' 'x' to exit"
 	qemu-system-arm \
 		-kernel $(KERNEL_BIN).qemu \
 		-cpu arm1176 \
