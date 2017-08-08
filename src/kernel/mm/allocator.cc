@@ -5,6 +5,7 @@
 #include "region.hh"
 #include "allocator.hh"
 #include "kernel/utils/placement-new.hh"
+#include "kernel/utils/allocator-new.hh"
 #include "kernel/utils/debug.hh"
 #include "kernel/utils/list.hh"
 #include "kernel/platform.hh"
@@ -24,7 +25,7 @@ namespace kernel {
       utils::list<free_item> free_objects;
 
     public:
-      explicit inline slab(const uint32_t &pobj_size)
+      explicit inline slab(const uint32_t &pobj_size, const bool &use_internal_region = false)
        : obj_size(pobj_size)
        , free_count(0) {
         const uint32_t &page_size = kernel::platform::get().page_size();
@@ -33,12 +34,17 @@ namespace kernel {
           size = page_size;
         }
 
-        _region = region::create(size, protection{1, 1}, "kernel:allocator:slab");
+        _region = region::create(size, protection{1, 1}, "kernel:allocator:slab", use_internal_region);
         for(uint32_t addr = _region->address(); addr < _region->address_end(); addr += obj_size) {
           free_item *obj = reinterpret_cast<free_item *>(addr);
           free_objects.add(obj);
           ++free_count;
         }
+      }
+
+      inline ~slab() {
+        ASSERT(empty());
+        region::release(_region);
       }
 
       bool empty() const {
@@ -69,6 +75,11 @@ namespace kernel {
       }
     };
 
+    static constexpr uint32_t builtin_slabs_size = 2;
+    static char builtin_slabs_buffer[ builtin_slabs_size * sizeof(slab) ];
+    static slab *builtin_slabs = reinterpret_cast<slab *>(builtin_slabs_buffer);
+    static uint32_t builtin_use_count = 0;
+
     class cache {
       uint32_t obj_size;
       utils::list<slab> slabs;
@@ -96,7 +107,8 @@ namespace kernel {
           }
         }
 
-        // TODO: alloc slab
+        usable_slab = new slab(obj_size);
+        slabs.add(usable_slab);
       }
 
     public:
@@ -107,6 +119,14 @@ namespace kernel {
 
       inline const uint32_t &object_size() const {
         return obj_size;
+      }
+
+      void add_builtin_slab() {
+        ASSERT(builtin_use_count < builtin_slabs_size);
+        slab *s = builtin_slabs + (builtin_use_count++);
+        new (s) slab(obj_size, true);
+        slabs.add(s);
+        usable_slab = s;
       }
 
       void *allocate() {
@@ -130,7 +150,8 @@ namespace kernel {
         s->deallocate(ptr);
 
         if(s->empty()) {
-          // TODO: free slab
+          slabs.remove(s);
+          delete s;
         }
 
         return true;
@@ -151,15 +172,32 @@ namespace kernel {
 
     static constexpr uint32_t caches_size = sizeof(caches) / sizeof(cache);
 
-    void allocator::init() {
-    }
-
-    void *allocator::allocate(const uint32_t &size) {
+    static inline cache* find_cache(const uint32_t &size) {
       for(uint32_t i = 0; i < caches_size; ++i) {
         auto &cache = caches[i];
         if(size <= cache.object_size()) {
-          return cache.allocate();
+          return &cache;
         }
+      }
+
+      return nullptr;
+    }
+
+    void allocator::init() {
+      // prepare a first slab to be able to allocate slab
+      cache *c = find_cache(sizeof(slab));
+      c->add_builtin_slab();
+
+      // prepare a first slab to be able to allocate region_info
+      // TODO: remove this hack
+      c = find_cache(sizeof(region) + sizeof(utils::list<void>::node));
+      c->add_builtin_slab();
+    }
+
+    void *allocator::allocate(const uint32_t &size) {
+      cache *c = find_cache(size);
+      if(c) {
+        return c->allocate();
       }
 
       const uint32_t &page_size = kernel::platform::get().page_size();

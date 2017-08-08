@@ -6,6 +6,7 @@
 #include "kernel/hw/memory/vm-page.hh"
 #include "region.hh"
 #include "kernel/utils/placement-new.hh"
+#include "kernel/utils/allocator-new.hh"
 #include "kernel/utils/debug.hh"
 #include "kernel/utils/list.hh"
 #include "kernel/platform.hh"
@@ -75,9 +76,9 @@ namespace kernel {
     // 4x kernel mapping
     // phys mem desc array
     // uart0 mapping
-    // TODO: add cells for is_internal
+    // 2x is_internal for allocator
     // TODO: stack
-    static constexpr uint32_t builtin_regions_size = 7;
+    static constexpr uint32_t builtin_regions_size = 9;
     static char builtin_regions_buffer[ builtin_regions_size * sizeof(region_info) ];
     static region_info *builtin_regions = reinterpret_cast<region_info *>(builtin_regions_buffer);
     static uint32_t builtin_use_count = 0;
@@ -160,14 +161,10 @@ namespace kernel {
 
       ASSERT(prev);
       const uint32_t address = prev->address_end();
-/*
-TODO: permit allocation
+
       region_info *ri = is_internal ?
         new_internal(address, len, prot, name) :
         new region_info(address, len, prot, name);
-*/
-      ASSERT(is_internal);
-      region_info *ri = new_internal(address, len, prot, name);
 
       ri->map();
       insert_region(ri, prev);
@@ -186,11 +183,7 @@ TODO: permit allocation
 
       ri->unmap();
       regions.remove(ri);
-
-/*
-TODO: permit allocation
       delete ri;
-*/
     }
 
     region *region::get_first() {
