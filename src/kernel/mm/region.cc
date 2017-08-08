@@ -76,6 +76,7 @@ namespace kernel {
     // phys mem desc array
     // uart0 mapping
     // TODO: add cells for is_internal
+    // TODO: stack
     static constexpr uint32_t builtin_regions_size = 7;
     static char builtin_region_buffer[ builtin_regions_size * sizeof(region_info) ];
     static region_info *builtin_regions = reinterpret_cast<region_info *>(builtin_region_buffer);
