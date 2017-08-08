@@ -111,6 +111,9 @@ namespace kernel {
         desc->access_permissions_3 = ap;
         desc->page_base_address = static_cast<uint32_t>(phys) >> (32 - 20);
 
+        bool ram = static_cast<uint32_t>(phys) < kernel::platform::get().ram_size();
+        desc->bufferable = desc->cacheable = ram ? 1 : 0;
+
         invalidate_tlb();
       }
 
@@ -142,8 +145,8 @@ namespace kernel {
 
           for(auto *second_desc = second_table->descriptors; second_desc < second_table->descriptors + 256; ++second_desc) {
             second_desc->type = 2;
-            second_desc->bufferable = 0; // TODO
-            second_desc->cacheable = 0; // TODO
+            second_desc->bufferable = 0;
+            second_desc->cacheable = 0;
             second_desc->access_permissions_0 = access_permission::none;
             second_desc->access_permissions_1 = access_permission::none;
             second_desc->access_permissions_2 = access_permission::none;
