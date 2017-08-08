@@ -78,9 +78,9 @@ namespace kernel {
     // TODO: add cells for is_internal
     // TODO: stack
     static constexpr uint32_t builtin_regions_size = 7;
-    static char builtin_region_buffer[ builtin_regions_size * sizeof(region_info) ];
-    static region_info *builtin_regions = reinterpret_cast<region_info *>(builtin_region_buffer);
-    static uint32_t internal_count = 0;
+    static char builtin_regions_buffer[ builtin_regions_size * sizeof(region_info) ];
+    static region_info *builtin_regions = reinterpret_cast<region_info *>(builtin_regions_buffer);
+    static uint32_t builtin_use_count = 0;
 
     static region_info *new_internal(const uint32_t &address, const uint32_t &len, const protection &prot, const char *name);
     static void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name);
@@ -176,8 +176,8 @@ TODO: permit allocation
     }
 
     region_info *new_internal(const uint32_t &address, const uint32_t &len, const protection &prot, const char *name) {
-      ASSERT(internal_count < builtin_regions_size);
-      region_info *ri = builtin_regions + (internal_count++);
+      ASSERT(builtin_use_count < builtin_regions_size);
+      region_info *ri = builtin_regions + (builtin_use_count++);
       return new (ri) region_info(address, len, prot, name);
     }
 
