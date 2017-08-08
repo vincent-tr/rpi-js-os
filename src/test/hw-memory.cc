@@ -3,9 +3,8 @@
 
 #include "kernel/utils/debug.hh"
 #include "kernel/hw/memory/phys-page.hh"
-#include "kernel/hw/memory/vm-protection.hh"
+#include "kernel/mm/protection.hh"
 #include "kernel/hw/memory/vm-page.hh"
-#include "kernel/hw/memory/vm-region.hh"
 #include "kernel/platform.hh"
 #include "kernel/utils/list.hh"
 #include "kernel/utils/panic.hh"
@@ -24,8 +23,8 @@ namespace test {
     uint32_t after[MY_PPAGE_NUM_INT];
   }; /* sizeof() Must be <= 4kB */
 
-  static void hw_phys() {
-    DEBUG("phys+vm pages test begin");
+  void hw_memory() {
+    DEBUG("test begin");
 
     // We place the pages we did allocate here
     kernel::utils::list<ppage> list;
@@ -42,7 +41,7 @@ namespace test {
       ++num_alloc_ppages;
 
       auto physpage = kernel::hw::memory::phys_page::alloc();
-      kernel::hw::memory::vm_page(static_cast<uint32_t>(physpage)).map(kernel::hw::memory::vm_protection{1, 1}, physpage);
+      kernel::hw::memory::vm_page(static_cast<uint32_t>(physpage)).map(kernel::mm::protection{1, 1}, physpage);
       current = reinterpret_cast<ppage*>(static_cast<uint32_t>(physpage));
 
       // Print the allocation status
@@ -92,28 +91,6 @@ namespace test {
       << " bytes, could free " << num_free_ppages * page_size << " bytes");
 
     ASSERT(num_alloc_ppages == num_free_ppages);
-
-    DEBUG("phys+vm pages test end");
-  }
-
-  static void hw_region() {
-    DEBUG("region test begin");
-
-    for(auto *region = kernel::hw::memory::vm_region::get_first(); region; region = kernel::hw::memory::vm_region::get_next(region)) {
-      DEBUG(
-        "region: " <<
-        reinterpret_cast<void*>(region->address()) << " -> " << reinterpret_cast<void*>(region->address_end()) <<
-        " (" << region->length() << ") : " << region->name());
-    }
-
-    DEBUG("region test end");
-  }
-
-  void hw_memory() {
-    DEBUG("test begin");
-
-    hw_phys();
-    hw_region();
 
     DEBUG("test end");
   }

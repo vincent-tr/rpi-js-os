@@ -18,9 +18,9 @@ namespace kernel {
         }
 
         phys_page phys() const;
-        vm_protection protection() const;
+        kernel::mm::protection protection() const;
 
-        void map(const vm_protection &prot, const phys_page &phys);
+        void map(const kernel::mm::protection &prot, const phys_page &phys);
         void unmap();
 
         static void init();

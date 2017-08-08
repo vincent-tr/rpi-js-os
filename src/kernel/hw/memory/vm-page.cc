@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 #include "phys-page.hh"
-#include "vm-protection.hh"
+#include "kernel/mm/protection.hh"
 #include "vm-page.hh"
 #include "kernel/utils/placement-new.hh"
 #include "kernel/utils/debug.hh"
@@ -93,16 +93,16 @@ namespace kernel {
         return phys_page(vaddr_to_descriptor(address)->page_base_address);
       }
 
-      vm_protection vm_page::protection() const {
+      kernel::mm::protection vm_page::protection() const {
         const auto * desc = vaddr_to_descriptor(address);
         switch(desc->access_permissions_0) {
-          case access_permission::read_only:  return vm_protection{1, 0};
-          case access_permission::read_write: return vm_protection{1, 1};
-          default:                            return vm_protection{0, 0};
+          case access_permission::read_only:  return kernel::mm::protection{1, 0};
+          case access_permission::read_write: return kernel::mm::protection{1, 1};
+          default:                            return kernel::mm::protection{0, 0};
         }
       }
 
-      void vm_page::map(const vm_protection &prot, const phys_page &phys) {
+      void vm_page::map(const kernel::mm::protection &prot, const phys_page &phys) {
         auto * desc = vaddr_to_descriptor(address);
         access_permission ap = prot.write ? access_permission::read_write : (prot.read ? access_permission::read_only : access_permission::none);
         desc->access_permissions_0 = ap;

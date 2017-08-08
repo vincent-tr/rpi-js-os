@@ -7,9 +7,9 @@
 #include "kernel/hw/atags.hh"
 #include "kernel/hw/interrupts.hh"
 #include "kernel/hw/memory/phys-page.hh"
-#include "kernel/hw/memory/vm-protection.hh"
+#include "kernel/mm/protection.hh"
 #include "kernel/hw/memory/vm-page.hh"
-#include "kernel/hw/memory/vm-region.hh"
+#include "kernel/mm/region.hh"
 #include "kernel/utils/debug.hh"
 #include "test/test.hh"
 
@@ -59,6 +59,7 @@ namespace kernel {
   void platform::test() {
     test::utils_list();
     test::hw_memory();
+    test::mm();
   }
 
   static platform instance;
@@ -79,7 +80,7 @@ namespace kernel {
 
     kernel::hw::memory::phys_page::init(_hw_mem_desc_begin, _hw_mem_desc_end);
     kernel::hw::memory::vm_page::init();
-    kernel::hw::memory::vm_region::init();
+    kernel::mm::region::init();
     kernel::hw::memory::vm_page::activate();
 
     test();

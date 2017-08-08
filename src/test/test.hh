@@ -11,11 +11,13 @@ namespace test {
 
   void utils_list();
   void hw_memory();
+  void mm();
 
 #else // TEST_ENABLED
 
   inline void utils_list() { }
   inline void hw_memory() { }
+  inline void mm() { }
 
 #endif // TEST_ENABLED
 
