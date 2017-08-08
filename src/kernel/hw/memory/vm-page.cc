@@ -24,9 +24,10 @@ namespace kernel {
 
       struct __attribute__ ((packed, aligned (4))) coarse_page_table_descriptor {
         uint32_t type:2;      // set to 1
-        uint32_t reserved0:3; // set to 4
+        uint32_t reserved0:2; // set to 0
+        uint32_t reserved1:1; // set to 1
         uint32_t domain:4;
-        uint32_t reserved1:1; // set to 0
+        uint32_t reserved2:1; // set to 0
         uint32_t next_descriptor_base_address:22;
       };
 
@@ -82,6 +83,8 @@ namespace kernel {
       static first_level_descriptor_table first_level_descriptors[1];
       static second_level_descriptor_table second_level_descriptors[4096];
 
+      static void invalidate_tlb();
+
       static inline small_page_table_descriptor* vaddr_to_descriptor(const uint32_t &vaddr) {
         return second_level_descriptors[vaddr >> 20].descriptors + ((vaddr >> 12) & 0xFF);
       }
@@ -107,6 +110,8 @@ namespace kernel {
         desc->access_permissions_2 = ap;
         desc->access_permissions_3 = ap;
         desc->page_base_address = static_cast<uint32_t>(phys);
+
+        invalidate_tlb();
       }
 
       void vm_page::unmap() {
@@ -116,41 +121,49 @@ namespace kernel {
         desc->access_permissions_2 = access_permission::none;
         desc->access_permissions_3 = access_permission::none;
         desc->page_base_address = 0;
+
+        invalidate_tlb();
       }
 
       void vm_page::init() {
         auto *first_desc = first_level_descriptors->descriptors;
         auto *second_table = second_level_descriptors;
 
+        uint32_t addr = 0;
+        const uint32_t &page_size = kernel::platform::get().page_size();
+
         for(;
             first_desc < first_level_descriptors->descriptors + 4096;
             ++first_desc,
             ++second_table) {
           first_desc->type = 1;
-          first_desc->reserved0 = 4;
+          first_desc->reserved0 = 0;
+          first_desc->reserved1 = 1;
           first_desc->domain = 0;
-          first_desc->reserved1 = 0;
-          first_desc->next_descriptor_base_address = reinterpret_cast<uint32_t>(second_table) >> 10;
+          first_desc->reserved2 = 0;
+          first_desc->next_descriptor_base_address = reinterpret_cast<uint32_t>(second_table) >> (32 - 22);
 
           for(auto *second_desc = second_table->descriptors; second_desc < second_table->descriptors + 256; ++second_desc) {
             second_desc->type = 2;
             second_desc->bufferable = 0; // TODO
             second_desc->cacheable = 0; // TODO
-            second_desc->access_permissions_0 = access_permission::none;
-            second_desc->access_permissions_1 = access_permission::none;
-            second_desc->access_permissions_2 = access_permission::none;
-            second_desc->access_permissions_3 = access_permission::none;
-            second_desc->page_base_address = 0;
+            second_desc->access_permissions_0 = access_permission::read_write; // none;
+            second_desc->access_permissions_1 = access_permission::read_write; // none;
+            second_desc->access_permissions_2 = access_permission::read_write; // none;
+            second_desc->access_permissions_3 = access_permission::read_write; // none;
+            second_desc->page_base_address = addr >> (32 - 20); // 0;
+            addr += page_size;
           }
         }
 
         // for now map from 0 to hw_mem_desc_end as r/w identical
-        // vm-regions will tune it properly
-        for(uint32_t addr = 0; addr < kernel::platform::get().hw_mem_desc_end(); addr += kernel::platform::get().page_size()) {
-          vm_page(addr).map(vm_protection{1, 1}, phys_page(addr));
-        }
+        // vm-region will tune it properly
+        //for(uint32_t addr = 0; addr < kernel::platform::get().hw_mem_desc_end(); addr += kernel::platform::get().page_size()) {
+        //  vm_page(addr).map(vm_protection{1, 1}, phys_page(addr));
+        //}
 
         // activate mmu
+        invalidate_tlb();
         // Copy the page table address to cp15
         asm volatile("mcr p15, 0, %0, c2, c0, 0" : : "r" (first_level_descriptors) : "memory");
         // Set the access control to all-supervisor
@@ -160,6 +173,12 @@ namespace kernel {
         asm("mrc p15, 0, %0, c1, c0, 0" : "=r" (reg) : : "cc");
         reg|=0x1;
         asm volatile("mcr p15, 0, %0, c1, c0, 0" : : "r" (reg) : "cc");
+      }
+
+      // TODO: manage read/write accesses propery (set S or R bit then AP 0 = RO and AP != 0 = RW)
+
+      inline void invalidate_tlb() {
+        asm volatile("mcr p15, 0, %0, c8, c7, 0" : : "r" (0));
       }
     }
   }
