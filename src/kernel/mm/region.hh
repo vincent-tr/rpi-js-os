@@ -2,7 +2,7 @@
 #define KERNEL_MM_REGION_HH
 
 namespace kernel {
-    namespace mm {
+  namespace mm {
 
     class region {
       uint32_t addr;
