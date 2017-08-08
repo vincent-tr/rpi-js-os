@@ -10,6 +10,7 @@
 #include "kernel/mm/protection.hh"
 #include "kernel/hw/memory/vm-page.hh"
 #include "kernel/mm/region.hh"
+#include "kernel/mm/allocator.hh"
 #include "kernel/utils/debug.hh"
 #include "test/test.hh"
 
@@ -82,6 +83,7 @@ namespace kernel {
     kernel::hw::memory::vm_page::init();
     kernel::mm::region::init();
     kernel::hw::memory::vm_page::activate();
+    kernel::mm::allocator::init();
 
     test();
 
