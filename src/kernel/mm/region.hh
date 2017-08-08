@@ -1,5 +1,5 @@
-#ifndef KERNEL_MEMORY_MM_REGION_HH
-#define KERNEL_MEMORY_MM_REGION_HH
+#ifndef KERNEL_MM_REGION_HH
+#define KERNEL_MM_REGION_HH
 
 namespace kernel {
     namespace mm {
@@ -51,4 +51,4 @@ namespace kernel {
   }
 }
 
-#endif // KERNEL_MEMORY_MM_REGION_HH
+#endif // KERNEL_MM_REGION_HH

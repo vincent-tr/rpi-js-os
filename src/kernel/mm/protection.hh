@@ -1,5 +1,5 @@
-#ifndef KERNEL_MEMORY_MM_PROTECTION_HH
-#define KERNEL_MEMORY_MM_PROTECTION_HH
+#ifndef KERNEL_MM_PROTECTION_HH
+#define KERNEL_MM_PROTECTION_HH
 
 namespace kernel {
   namespace mm {
@@ -12,4 +12,4 @@ namespace kernel {
   }
 }
 
-#endif // KERNEL_MEMORY_MM_PROTECTION_HH
+#endif // KERNEL_MM_PROTECTION_HH
