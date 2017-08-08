@@ -152,7 +152,7 @@ namespace kernel {
           prev = rit;
           break;
         }
-        if(rit->next_node()->address() - rit->address_end() <= len) {
+        if(rit->next_node()->address() - rit->address_end() >= len) {
           prev = rit;
           break;
         }
