@@ -39,7 +39,6 @@ namespace kernel {
       static utils::list<phys_page_info> used_pages;
       static utils::list<phys_page_info> free_pages;
 
-
       inline void phys_page_info::alloc() {
         ASSERT(!_used);
         free_pages.remove(this);
