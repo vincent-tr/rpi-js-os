@@ -25,7 +25,7 @@ namespace test {
   }; /* sizeof() Must be <= 4kB */
 
   static void hw_phys() {
-    DEBUG("phys test begin");
+    DEBUG("phys+vm pages test begin");
 
     // We place the pages we did allocate here
     kernel::utils::list<ppage> list;
@@ -34,12 +34,16 @@ namespace test {
     const uint32_t &page_size = kernel::platform::get().page_size();
     const uint32_t pages_count = (kernel::platform::get().ram_size() - kernel::platform::get().hw_mem_desc_end()) / page_size;
 
+    ASSERT(sizeof(ppage) == page_size);
     DEBUG("page size: " << page_size);
     DEBUG("pages count: " << pages_count);
 
     while(num_alloc_ppages < pages_count) {
       ++num_alloc_ppages;
-      current = reinterpret_cast<ppage*>(static_cast<uint32_t>(kernel::hw::memory::phys_page::alloc()));
+
+      auto physpage = kernel::hw::memory::phys_page::alloc();
+      kernel::hw::memory::vm_page(static_cast<uint32_t>(physpage)).map(kernel::hw::memory::vm_protection{1, 1}, physpage);
+      current = reinterpret_cast<ppage*>(static_cast<uint32_t>(physpage));
 
       // Print the allocation status
       if(!(num_alloc_ppages % 10000) || num_alloc_ppages == pages_count) {
@@ -64,13 +68,18 @@ namespace test {
         if ((current->before[i] !=  reinterpret_cast<uint32_t>(current))
           || (current->after[i] !=  reinterpret_cast<uint32_t>(current))) {
           // STOP !
+          DEBUG(current);
+          DEBUG(i);
+          DEBUG((void*)current->before[i]);
+          DEBUG((void*)current->after[i]);
           kernel::utils::panic("Page overwritten");
         }
       }
 
-
       // Release the descriptor
-      kernel::hw::memory::phys_page(reinterpret_cast<uint32_t>(current)).free();
+      kernel::hw::memory::phys_page physpage(reinterpret_cast<uint32_t>(current));
+      kernel::hw::memory::vm_page(static_cast<uint32_t>(physpage));
+      physpage.free();
 
       // Print the deallocation status
       num_free_ppages++;
@@ -84,7 +93,7 @@ namespace test {
 
     ASSERT(num_alloc_ppages == num_free_ppages);
 
-    DEBUG("phys test end");
+    DEBUG("phys+vm pages test end");
   }
 
   static void hw_region() {

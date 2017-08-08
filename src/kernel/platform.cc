@@ -80,6 +80,7 @@ namespace kernel {
     kernel::hw::memory::phys_page::init(_hw_mem_desc_begin, _hw_mem_desc_end);
     kernel::hw::memory::vm_page::init();
     kernel::hw::memory::vm_region::init();
+    kernel::hw::memory::vm_page::activate();
 
     test();
 

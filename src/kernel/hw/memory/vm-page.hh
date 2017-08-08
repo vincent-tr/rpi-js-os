@@ -24,6 +24,7 @@ namespace kernel {
         void unmap();
 
         static void init();
+        static void activate();
       };
     }
   }
