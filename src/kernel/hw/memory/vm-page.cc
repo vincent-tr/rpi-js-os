@@ -90,7 +90,7 @@ namespace kernel {
       }
 
       phys_page vm_page::phys() const {
-        return phys_page(vaddr_to_descriptor(address)->page_base_address);
+        return phys_page(vaddr_to_descriptor(address)->page_base_address << (32 - 20));
       }
 
       kernel::mm::protection vm_page::protection() const {
