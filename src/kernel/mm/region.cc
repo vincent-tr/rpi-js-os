@@ -216,16 +216,18 @@ namespace kernel {
 
         s->deallocate(ptr);
 
-        if(s->should_release()) {
-          slabs.remove(s);
-          remove_region(s->this_region());
-
-          //copy region to local before unmap it because its address is unside the mapping
-          char local_region_buffer[ sizeof(region_info) ];
-          region_info *ri = reinterpret_cast<region_info *>(local_region_buffer);
-          memcpy(ri, s->this_region(), sizeof(region_info));
-          ri->unmap();
+        if(!s->should_release()) {
+          return;
         }
+
+        slabs.remove(s);
+        remove_region(s->this_region());
+
+        //copy region to local before unmap it because its address is unside the mapping
+        char local_region_buffer[ sizeof(region_info) ];
+        region_info *ri = reinterpret_cast<region_info *>(local_region_buffer);
+        memcpy(ri, s->this_region(), sizeof(region_info));
+        ri->unmap();
       }
     };
 
