@@ -13,19 +13,58 @@
 
 namespace test {
 
-  static constexpr uint32_t ptr_len = 10;
-  static char *ptr[ptr_len];
-
-  void mm() {
-    DEBUG("test begin");
-
+  static void print_regions() {
     for(auto *region = kernel::mm::region::get_first(); region; region = kernel::mm::region::get_next(region)) {
       DEBUG(
         "region: " <<
         reinterpret_cast<void*>(region->address()) << " -> " << reinterpret_cast<void*>(region->address_end()) <<
         " (" << region->length() << ") : " << region->name());
     }
+  }
+
+  static void mm_region() {
+    DEBUG("region test begin");
+
+    print_regions();
+
+    constexpr uint32_t regions_count = 2;
+    kernel::mm::region *regions[regions_count];
+    const uint32_t &page_size = kernel::platform::get().page_size();
+
+    for(uint32_t i=0; i<regions_count; ++i) {
+      kernel::mm::region *r = kernel::mm::region::create((i+1) * page_size, kernel::mm::protection{1,1}, "test");
+      regions[i] = r;
+      for(uint32_t addr = r->address(); addr < r->address_end(); addr += sizeof(addr)) {
+        *reinterpret_cast<uint32_t *>(addr) = r->address();
+      }
+    }
+
+    DEBUG(regions_count << " regions created");
+    print_regions();
+
+    for(uint32_t i=0; i<regions_count; ++i) {
+      kernel::mm::region *r = regions[i];
+      for(uint32_t addr = r->address(); addr < r->address_end(); addr += sizeof(addr)) {
+        ASSERT(*reinterpret_cast<uint32_t *>(addr) == r->address());
+      }
+      kernel::mm::region::release(r);
+    }
+
+    DEBUG(regions_count << " regions released");
+    print_regions();
+
+    DEBUG("region test end");
+  }
+
+  void mm() {
+    DEBUG("test begin");
+
+    mm_region();
 /*
+
+    static constexpr uint32_t ptr_len = 10;
+    static char *ptr[ptr_len];
+
     for(uint32_t i=0; i<ptr_len; ++i) {
       DEBUG("before alloc " << i);
       ptr[i] = new char[i+1];

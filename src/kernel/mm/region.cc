@@ -40,6 +40,14 @@ namespace kernel {
 #endif
     ;
 
+    struct region_info;
+
+    static void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name);
+    static void create_internal_region(const void *begin, const void *end, const bool &can_write, const char *name);
+    static void create_and_map_region(region_info *ri, region_info **oprev, const uint32_t &len, const protection &prot, const char *name);
+    static void insert_region(region_info *ri, region_info *prev);
+    static void remove_region(region_info *ri);
+
     struct region_info : public utils::list<region_info>::node, region {
       explicit inline region_info(const uint32_t &vaddr, const uint32_t &plen, const protection &pprot, const char *pname)
        : region(vaddr, plen, pprot, pname) {
@@ -85,7 +93,7 @@ namespace kernel {
       explicit inline region_slab(region_info *reg)
        : free_count(0) {
         ASSERT(this == reinterpret_cast<void*>(reg->address()));
-        for(uint32_t addr = _this_region->address() + sizeof(region_slab); addr < _this_region->address_end(); addr += sizeof(region_info)) {
+        for(uint32_t addr = reg->address() + sizeof(region_slab); addr < reg->address_end(); addr += sizeof(region_info)) {
           region_info *obj = reinterpret_cast<region_info *>(addr);
           free_list.add(obj);
           ++free_count;
@@ -93,7 +101,7 @@ namespace kernel {
 
         // move current region to first object
         _this_region = allocate();
-        memcpy(_this_region, reg, sizeof(region));
+        memcpy(_this_region, reg, sizeof(region_info));
       }
 
       region_info *allocate() {
@@ -166,8 +174,19 @@ namespace kernel {
           }
         }
 
-        // TODO
-        usable_slab = new region_slab(nullptr);
+        // allocate new region/slab
+        char local_region_buffer[ sizeof(region_info) ];
+        region_info *ri = reinterpret_cast<region_info *>(local_region_buffer);
+        region_info *prev;
+
+        create_and_map_region(ri, &prev, kernel::platform::get().page_size(), protection{1,1}, "kernel:region:slab");
+
+        usable_slab = reinterpret_cast<region_slab *>(ri->address());
+        new (usable_slab) region_slab(ri);
+        // region copied from stack to slab
+        ri = usable_slab->this_region();
+
+        insert_region(ri, prev);
         slabs.add(usable_slab);
       }
 
@@ -198,7 +217,13 @@ namespace kernel {
 
         if(s->should_release()) {
           slabs.remove(s);
-          delete s; // TODO
+          remove_region(s->this_region());
+
+          //copy region to local before unmap it because its address is unside the mapping
+          char local_region_buffer[ sizeof(region_info) ];
+          region_info *ri = reinterpret_cast<region_info *>(local_region_buffer);
+          memcpy(ri, s->this_region(), sizeof(region_info));
+          ri->unmap();
         }
       }
     };
@@ -279,9 +304,6 @@ namespace kernel {
     static region_list list;
     static region_cache cache;
 
-    static void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name);
-    static void create_internal_region(const void *begin, const void *end, const bool &can_write, const char *name);
-
     void region::init() {
       const auto &platform = kernel::platform::get();
       create_internal_region(nullptr,                      &__text_start,              false, "kernel:reserved");
@@ -304,21 +326,35 @@ namespace kernel {
       create_internal_region(reinterpret_cast<uint32_t>(begin), reinterpret_cast<uint32_t>(end), can_write, name);
     }
 
+    void create_and_map_region(region_info *ri, region_info **oprev, const uint32_t &len, const protection &prot, const char *name) {
+
+      region_info *prev = list.find_place(len);
+      *oprev = prev;
+      ASSERT(prev);
+      const uint32_t address = prev->address_end();
+
+      new (ri) region_info(address, len, prot, name);
+      ri->map();
+    }
+
+    void insert_region(region_info *ri, region_info *prev) {
+      list.insert(ri, prev);
+    }
+
+    void remove_region(region_info *ri) {
+      list.remove(ri);
+    }
+
     region *region::find(const uint32_t &address) {
       return list.find(address);
     }
 
-    region *region::create(const uint32_t &len, const protection &prot, const char *name, const bool &is_internal) {
+    region *region::create(const uint32_t &len, const protection &prot, const char *name) {
 
-      // find suitable place
-      region_info *prev = list.find_place(len);
-      ASSERT(prev);
-      const uint32_t address = prev->address_end();
-
-      region_info *ri = is_internal ? cache.allocate_builtin() : cache.allocate();
-      new (ri) region_info(address, len, prot, name);
-      ri->map();
-      list.insert(ri, prev);
+      region_info *ri = cache.allocate();
+      region_info *prev;
+      create_and_map_region(ri, &prev, len, prot, name);
+      insert_region(ri, prev);
 
       return ri;
     }
@@ -327,7 +363,7 @@ namespace kernel {
       region_info *ri = static_cast<region_info *>(region);
 
       ri->unmap();
-      list.remove(ri);
+      remove_region(ri);
       cache.deallocate(ri);
     }
 
