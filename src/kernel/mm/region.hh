@@ -45,8 +45,8 @@ namespace kernel {
       static region *create(const uint32_t &len, const protection &prot, const char *name, const bool &is_internal = false);
       static void release(region *region);
 
-      static region *get_first();
-      static region *get_next(region *region);
+      static const region *get_first();
+      static const region *get_next(const region *region);
     };
   }
 }
