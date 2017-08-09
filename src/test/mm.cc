@@ -25,7 +25,7 @@ namespace test {
         reinterpret_cast<void*>(region->address()) << " -> " << reinterpret_cast<void*>(region->address_end()) <<
         " (" << region->length() << ") : " << region->name());
     }
-
+/*
     for(uint32_t i=0; i<ptr_len; ++i) {
       DEBUG("before alloc " << i);
       ptr[i] = new char[i+1];
@@ -53,7 +53,7 @@ namespace test {
         reinterpret_cast<void*>(region->address()) << " -> " << reinterpret_cast<void*>(region->address_end()) <<
         " (" << region->length() << ") : " << region->name());
     }
-
+*/
     DEBUG("test end");
   }
 
