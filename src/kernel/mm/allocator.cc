@@ -9,7 +9,7 @@
 #include "kernel/utils/debug.hh"
 #include "kernel/utils/list.hh"
 #include "kernel/platform.hh"
-
+/*
 namespace kernel {
   namespace mm {
 
@@ -221,3 +221,4 @@ namespace kernel {
     }
   }
 }
+*/

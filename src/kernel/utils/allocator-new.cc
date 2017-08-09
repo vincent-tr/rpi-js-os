@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 #include "kernel/mm/allocator.hh"
-
+/*
 void *operator new(size_t s)     throw() {
   return kernel::mm::allocator::allocate(s);
 }
@@ -26,3 +26,4 @@ void  operator delete[](void *p) throw() {
 void  operator delete[](void *p, size_t) throw() {
   kernel::mm::allocator::deallocate(p);
 }
+*/
