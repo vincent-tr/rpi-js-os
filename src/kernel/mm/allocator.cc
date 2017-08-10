@@ -63,7 +63,7 @@ namespace kernel {
       }
 
       bool is_in(void *ptr) const {
-        return _region->address() <= reinterpret_cast<uint32_t>(ptr) && reinterpret_cast<uint32_t>(ptr) + object_size < _region->address_end();
+        return _region->address() <= reinterpret_cast<uint32_t>(ptr) && reinterpret_cast<uint32_t>(ptr) + object_size <= _region->address_end();
       }
 
       void *allocate() {
