@@ -312,7 +312,7 @@ namespace kernel {
 
     void region::init() {
       const auto &platform = kernel::platform::get();
-      create_internal_region(stack_start,                  stack_end,                  true, "kernel:stack");
+      create_internal_region(stack_start,                  stack_end,                  true,  "kernel:stack");
       create_internal_region(&__text_start,                &__text_end,                false, "kernel:text");
       create_internal_region(&__rodata_start,              &__rodata_end,              false, "kernel:rodata");
       create_internal_region(&__data_start,                &__data_end,                true,  "kernel:data");
