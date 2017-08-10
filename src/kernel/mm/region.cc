@@ -40,6 +40,9 @@ namespace kernel {
 #endif
     ;
 
+    static constexpr uint32_t stack_start = 0x8000;
+    static constexpr uint32_t stack_end = 0x10000;
+
     struct region_info;
 
     static void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name);
@@ -132,11 +135,10 @@ namespace kernel {
 
     class region_cache {
 
-      // reserved
+      // stack
       // 4x kernel mapping
       // phys mem desc array
       // uart0 mapping
-      // TODO: stack
       static constexpr uint32_t builtin_regions_count = 7;
       char builtin_regions_buffer[ builtin_regions_count * sizeof(region_info) ];
       region_info *builtin_regions;
@@ -308,7 +310,7 @@ namespace kernel {
 
     void region::init() {
       const auto &platform = kernel::platform::get();
-      create_internal_region(nullptr,                      &__text_start,              false, "kernel:reserved");
+      create_internal_region(stack_start,                  stack_end,                  true, "kernel:stack");
       create_internal_region(&__text_start,                &__text_end,                false, "kernel:text");
       create_internal_region(&__rodata_start,              &__rodata_end,              false, "kernel:rodata");
       create_internal_region(&__data_start,                &__data_end,                true,  "kernel:data");
