@@ -139,6 +139,7 @@ namespace kernel {
       // 4x kernel mapping
       // phys mem desc array
       // uart0 mapping
+      // TODO: move stack + setup stack guard
       static constexpr uint32_t builtin_regions_count = 7;
       char builtin_regions_buffer[ builtin_regions_count * sizeof(region_info) ];
       region_info *builtin_regions;
