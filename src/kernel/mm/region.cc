@@ -60,7 +60,7 @@ namespace kernel {
         const uint32_t &page_size = kernel::platform::get().page_size();
         for(uint32_t addr=address(); addr < address_end(); addr += page_size) {
           hw::memory::vm_page page(addr);
-          page.map(protection(), hw::memory::phys_page::alloc());
+          page.map(prot(), hw::memory::phys_page::alloc());
         }
       }
 
@@ -68,7 +68,7 @@ namespace kernel {
         const uint32_t &page_size = kernel::platform::get().page_size();
         for(uint32_t addr=address(); addr < address_end(); addr += page_size) {
           hw::memory::vm_page page(addr);
-          page.map(protection(), hw::memory::phys_page(addr));
+          page.map(prot(), hw::memory::phys_page(addr));
         }
       }
 
