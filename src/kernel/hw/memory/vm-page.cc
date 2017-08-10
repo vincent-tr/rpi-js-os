@@ -83,7 +83,8 @@ namespace kernel {
       static first_level_descriptor_table first_level_descriptors[1];
       static second_level_descriptor_table second_level_descriptors[4096];
 
-      static void invalidate_tlb();
+      static void invalidate_tlb_full();
+      static void invalidate_tlb_single(const uint32_t&addr);
 
       static inline small_page_table_descriptor* vaddr_to_descriptor(const uint32_t &vaddr) {
         return second_level_descriptors[vaddr >> 20].descriptors + ((vaddr >> 12) & 0xFF);
@@ -114,7 +115,7 @@ namespace kernel {
         bool ram = static_cast<uint32_t>(phys) < kernel::platform::get().ram_size();
         desc->bufferable = desc->cacheable = ram ? 1 : 0;
 
-        invalidate_tlb();
+        invalidate_tlb_single(address);
       }
 
       void vm_page::unmap() {
@@ -125,7 +126,7 @@ namespace kernel {
         desc->access_permissions_3 = access_permission::none;
         desc->page_base_address = 0;
 
-        invalidate_tlb();
+        invalidate_tlb_single(address);
       }
 
       void vm_page::init() {
@@ -167,11 +168,16 @@ namespace kernel {
         reg|=0x1;
         asm volatile("mcr p15, 0, %0, c1, c0, 0" : : "r" (reg) : "cc");
 
-        invalidate_tlb();
+        invalidate_tlb_full();
       }
 
-      inline void invalidate_tlb() {
+      inline void invalidate_tlb_full() {
         asm volatile("mcr p15, 0, %0, c8, c7, 0" : : "r" (0));
+      }
+
+      inline void invalidate_tlb_single(const uint32_t&addr) {
+        asm volatile("mcr p15, 0, %0, c8, c7, 1" : : "r" (addr & 0xFFFFFC00));
+
       }
     }
   }
