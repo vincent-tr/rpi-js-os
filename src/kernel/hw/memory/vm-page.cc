@@ -159,8 +159,8 @@ namespace kernel {
       void vm_page::activate() {
         // Copy the page table address to cp15
         asm volatile("mcr p15, 0, %0, c2, c0, 0" : : "r" (first_level_descriptors) : "memory");
-        // Set the access control to all-supervisor
-        asm volatile("mcr p15, 0, %0, c3, c0, 0" : : "r" (~0));
+        // Set the access control to all client access (b01)
+        asm volatile("mcr p15, 0, %0, c3, c0, 0" : : "r" (0x55555555));
         // Enable the MMU
         uint32_t reg;
         asm("mrc p15, 0, %0, c1, c0, 0" : "=r" (reg) : : "cc");
@@ -169,8 +169,6 @@ namespace kernel {
 
         invalidate_tlb();
       }
-
-      // TODO: manage read/write accesses propery (set S or R bit then AP 0 = RO and AP != 0 = RW)
 
       inline void invalidate_tlb() {
         asm volatile("mcr p15, 0, %0, c8, c7, 0" : : "r" (0));
