@@ -27,7 +27,7 @@ namespace test {
 
     print_regions();
 
-    constexpr uint32_t regions_count = 100;
+    constexpr uint32_t regions_count = 200;
     kernel::mm::region *regions[regions_count];
     const uint32_t &page_size = kernel::platform::get().page_size();
 
