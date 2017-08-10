@@ -114,11 +114,14 @@ namespace kernel {
         static_assert(object_size >= sizeof(slab_type), "bad object_size with is_slab_in_area=true");
 
         // first init on stack
-        slab_type lslab;
+        char lslab_buffer[ sizeof(slab_type) ];
+        slab_type *lslab = reinterpret_cast<slab_type *>(lslab_buffer);
+        new (lslab) slab_type();
 
         // then allocate and move to first object
-        slab_type *slab = reinterpret_cast<slab_type *>(lslab.allocate());
-        memcpy(slab, &lslab, sizeof(slab_type));
+        slab_type *slab = reinterpret_cast<slab_type *>(lslab->allocate());
+        memcpy(slab, lslab, sizeof(slab_type));
+
         return slab;
       }
 
