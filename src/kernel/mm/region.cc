@@ -221,6 +221,7 @@ namespace kernel {
           return;
         }
 
+        if(usable_slab == s) { usable_slab = nullptr; }
         slabs.remove(s);
         remove_region(s->this_region());
 
