@@ -59,7 +59,7 @@ namespace kernel {
 
   void platform::test() {
     test::utils_list();
-    // test::hw_memory(); -> cannot test it with allocator
+    test::hw_memory();
     test::mm();
   }
 

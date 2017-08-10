@@ -45,7 +45,6 @@ namespace test {
       }
 
       DEBUG(regions_count << " regions created (total_size=" << total_size << ")");
-      print_regions();
 
       for(uint32_t i=0; i<regions_count; ++i) {
         kernel::mm::region *r = regions[i];
@@ -56,8 +55,9 @@ namespace test {
       }
 
       DEBUG(regions_count << " regions released");
-      print_regions();
     }
+
+    print_regions();
 
     DEBUG("region test end");
   }

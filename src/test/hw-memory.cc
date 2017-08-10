@@ -23,8 +23,7 @@ namespace test {
     uint32_t after[MY_PPAGE_NUM_INT];
   }; /* sizeof() Must be <= 4kB */
 
-  void hw_memory() {
-    DEBUG("test begin");
+  static void vm_allocator() {
 
     // We place the pages we did allocate here
     kernel::utils::list<ppage> list;
@@ -77,7 +76,7 @@ namespace test {
 
       // Release the descriptor
       kernel::hw::memory::phys_page physpage(reinterpret_cast<uint32_t>(current));
-      kernel::hw::memory::vm_page(static_cast<uint32_t>(physpage));
+      kernel::hw::memory::vm_page(static_cast<uint32_t>(physpage)).unmap();
       physpage.free();
 
       // Print the deallocation status
@@ -91,6 +90,26 @@ namespace test {
       << " bytes, could free " << num_free_ppages * page_size << " bytes");
 
     ASSERT(num_alloc_ppages == num_free_ppages);
+  }
+
+  static void vm_fault() {
+
+    uint32_t addr = 0x01000000;
+
+    uint32_t *ptr = reinterpret_cast<uint32_t *>(addr);
+    kernel::hw::memory::vm_page vmpage(addr);
+    DEBUG("ptr=" << ptr);
+    DEBUG("phys addr=" << (void*)static_cast<uint32_t>(vmpage.phys()));
+    DEBUG("protection={ read: " << vmpage.protection().read << ", write: " << vmpage.protection().write << " }");
+
+    DEBUG("ptr value=" << *ptr);
+  }
+
+  void hw_memory() {
+    DEBUG("test begin");
+
+    vm_allocator();
+    vm_fault();
 
     DEBUG("test end");
   }
