@@ -61,7 +61,7 @@ namespace kernel {
       // 11 x x Read/write              Read/write
 
       enum access_permission {
-        none = 1,
+        none = 0,
         read_only = 2, // in fact same as read_write
         read_write = 3
       };
