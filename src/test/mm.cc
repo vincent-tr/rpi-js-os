@@ -59,29 +59,17 @@ namespace test {
     DEBUG("region test end");
   }
 
-  void mm() {
-    DEBUG("test begin");
+  static void mm_allocator() {
+    DEBUG("allocator test begin");
 
-    mm_region();
-/*
-
-    static constexpr uint32_t ptr_len = 10;
-    static char *ptr[ptr_len];
+    constexpr uint32_t ptr_len = 10;
+    char *ptr[ptr_len];
 
     for(uint32_t i=0; i<ptr_len; ++i) {
-      DEBUG("before alloc " << i);
       ptr[i] = new char[i+1];
-      DEBUG("after alloc " << i);
     }
 
     DEBUG("allocated " << ptr_len << " times");
-
-    for(auto *region = kernel::mm::region::get_first(); region; region = kernel::mm::region::get_next(region)) {
-      DEBUG(
-        "region: " <<
-        reinterpret_cast<void*>(region->address()) << " -> " << reinterpret_cast<void*>(region->address_end()) <<
-        " (" << region->length() << ") : " << region->name());
-    }
 
     for(uint32_t i=0; i<ptr_len; ++i) {
       delete ptr[i];
@@ -89,13 +77,15 @@ namespace test {
 
     DEBUG("deallocated " << ptr_len << " times");
 
-    for(auto *region = kernel::mm::region::get_first(); region; region = kernel::mm::region::get_next(region)) {
-      DEBUG(
-        "region: " <<
-        reinterpret_cast<void*>(region->address()) << " -> " << reinterpret_cast<void*>(region->address_end()) <<
-        " (" << region->length() << ") : " << region->name());
-    }
-*/
+    DEBUG("allocator test end");
+  }
+
+  void mm() {
+    DEBUG("test begin");
+
+    mm_region();
+    mm_allocator();
+
     DEBUG("test end");
   }
 

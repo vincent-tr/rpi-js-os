@@ -83,7 +83,7 @@ namespace kernel {
     kernel::hw::memory::vm_page::init();
     kernel::mm::region::init();
     kernel::hw::memory::vm_page::activate();
-    //kernel::mm::allocator::init();
+    kernel::mm::allocator::init();
 
     test();
 
