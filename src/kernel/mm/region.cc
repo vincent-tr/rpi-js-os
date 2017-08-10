@@ -93,8 +93,7 @@ namespace kernel {
       explicit inline region_slab(region_info *reg)
        : free_count(0) {
         ASSERT(this == reinterpret_cast<void*>(reg->address()));
-        // align start on region_info size
-        for(uint32_t addr = (reg->address() + sizeof(region_slab) + sizeof(region_info) - 1) / sizeof(region_info) * sizeof(region_info); addr < reg->address_end(); addr += sizeof(region_info)) {
+        for(uint32_t addr = reg->address() + sizeof(region_slab); addr + sizeof(region_info) <= reg->address_end(); addr += sizeof(region_info)) {
           region_info *obj = reinterpret_cast<region_info *>(addr);
           free_list.add(obj);
           ++free_count;
