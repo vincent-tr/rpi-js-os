@@ -62,7 +62,7 @@ namespace kernel {
 
       enum access_permission {
         none = 1,
-        read_only = 2,
+        read_only = 2, // in fact same as read_write
         read_write = 3
       };
 
