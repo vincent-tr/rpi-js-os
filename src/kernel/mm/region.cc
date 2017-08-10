@@ -40,8 +40,8 @@ namespace kernel {
 #endif
     ;
 
-    static constexpr uint32_t stack_start = 0x8000;
-    static constexpr uint32_t stack_end = 0x10000;
+    static constexpr uint32_t stack_start = 0;
+    static const uint32_t stack_end = reinterpret_cast<uint32_t>(&__text_start);
 
     struct region_info;
 
