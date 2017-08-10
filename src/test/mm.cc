@@ -62,23 +62,37 @@ namespace test {
     DEBUG("region test end");
   }
 
+  static constexpr uint32_t ptr_len = 10000;
+  static uint32_t *ptr[ptr_len];
+
   static void mm_allocator() {
     DEBUG("allocator test begin");
 
-    constexpr uint32_t ptr_len = 10;
-    char *ptr[ptr_len];
+    for(uint32_t count=0; count<4; ++count) {
 
-    for(uint32_t i=0; i<ptr_len; ++i) {
-      ptr[i] = new char[i+1];
+      uint32_t total_size = 0;
+
+      for(uint32_t idx=0; idx<ptr_len; ++idx) {
+        uint32_t *current = new uint32_t[idx+1];
+        total_size += (idx+1) * sizeof(uint32_t);
+        ptr[idx] = current;
+        for(uint32_t i=0; i<idx; ++i) {
+          current[i] = reinterpret_cast<uint32_t>(current);
+        }
+      }
+
+      DEBUG("allocated " << ptr_len << " times (total_size=" << total_size << ")");
+
+      for(uint32_t idx=0; idx<ptr_len; ++idx) {
+        uint32_t *current = ptr[idx];
+        for(uint32_t i=0; i<idx; ++i) {
+          ASSERT(current[i] == reinterpret_cast<uint32_t>(current));
+        }
+        delete ptr[idx];
+      }
+
+      DEBUG("deallocated " << ptr_len << " times");
     }
-
-    DEBUG("allocated " << ptr_len << " times");
-
-    for(uint32_t i=0; i<ptr_len; ++i) {
-      delete ptr[i];
-    }
-
-    DEBUG("deallocated " << ptr_len << " times");
 
     DEBUG("allocator test end");
   }
