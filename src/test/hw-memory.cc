@@ -100,7 +100,8 @@ namespace test {
     kernel::hw::memory::vm_page vmpage(addr);
     DEBUG("ptr=" << ptr);
     DEBUG("phys addr=" << (void*)static_cast<uint32_t>(vmpage.phys()));
-    DEBUG("protection={ read: " << vmpage.protection().read << ", write: " << vmpage.protection().write << " }");
+    auto prot = vmpage.protection();
+    DEBUG("protection={ read: " << prot.read << ", write: " << prot.write << " }");
 
     DEBUG("ptr value=" << *ptr);
   }
