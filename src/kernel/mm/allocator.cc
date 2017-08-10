@@ -212,6 +212,7 @@ namespace kernel {
         slab->deallocate(ptr);
 
         if(slab->empty()) {
+          if(slab == usable_slab) { usable_slab = nullptr; }
           slabs.remove(slab);
           slab_type::release(slab);
         }
