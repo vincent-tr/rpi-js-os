@@ -27,6 +27,7 @@ namespace kernel {
     template<uint32_t object_size, uint32_t object_count>
     struct area {
       object<object_size> objects[object_count];
+      static_assert(sizeof(objects) == 4096, "wrong area size");
     };
 
     template<uint32_t object_size, uint32_t object_count, bool is_slab_in_area>
