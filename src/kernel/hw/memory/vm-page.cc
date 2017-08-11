@@ -8,6 +8,7 @@
 #include "kernel/utils/debug.hh"
 #include "kernel/utils/list.hh"
 #include "kernel/platform.hh"
+#include "kernel/hw/registers.hh"
 
 namespace kernel {
   namespace hw {
@@ -158,15 +159,14 @@ namespace kernel {
       }
 
       void vm_page::activate() {
-        // Copy the page table address to cp15
-        asm volatile("mcr p15, 0, %0, c2, c0, 0" : : "r" (first_level_descriptors) : "memory");
+        registers::page_table_write(first_level_descriptors);
         // Set the access control to all client access (b01)
-        asm volatile("mcr p15, 0, %0, c3, c0, 0" : : "r" (0x55555555));
+        registers::access_control_write(0x55555555);
+
         // Enable the MMU
-        uint32_t reg;
-        asm("mrc p15, 0, %0, c1, c0, 0" : "=r" (reg) : : "cc");
-        reg|=0x1;
-        asm volatile("mcr p15, 0, %0, c1, c0, 0" : : "r" (reg) : "cc");
+        uint32_t control = registers::control_read();
+        control |= registers::control_mmu;
+        registers::control_write(control);
 
         invalidate_tlb_full();
       }
