@@ -43,6 +43,7 @@ namespace kernel {
       static region *find(const uint32_t &address);
 
       static region *create(const uint32_t &len, const protection &prot, const char *name);
+      static region *create(const uint32_t &address, const uint32_t &len, const protection &prot, const char *name);
       static void release(region *region);
 
       static const region *get_first();

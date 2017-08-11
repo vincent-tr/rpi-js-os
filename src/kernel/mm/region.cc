@@ -277,6 +277,19 @@ namespace kernel {
         return nullptr;
       }
 
+      region_info *find(const uint32_t &address, const uint32_t &len) {
+        for(region_info* ri : regions) {
+          if(ri->address() <= address + len && address <= ri->address_end()) {
+            return ri;
+          }
+          if(ri->address() > address + len) {
+            break; // sorted list
+          }
+        }
+
+        return nullptr;
+      }
+
       // return prev
       region_info *find_place(const uint32_t &len) {
 
@@ -361,6 +374,19 @@ namespace kernel {
       region_info *prev;
       create_and_map_region(ri, &prev, len, prot, name);
       insert_region(ri, prev);
+
+      return ri;
+    }
+
+    region *region::create(const uint32_t &address, const uint32_t &len, const protection &prot, const char *name) {
+
+      // ensure that the area is not used
+      ASSERT(!list.find(address, len));
+
+      region_info *ri = cache.allocate();
+      new (ri) region_info(address, len, prot, name);
+      ri->map();
+      insert_region(ri, nullptr);
 
       return ri;
     }
