@@ -85,6 +85,14 @@ namespace kernel {
     kernel::hw::memory::vm_page::activate();
     kernel::mm::allocator::init();
 
+    DEBUG("kernel memory layout");
+    for(auto *region = kernel::mm::region::get_first(); region; region = kernel::mm::region::get_next(region)) {
+      DEBUG(
+        "region: " <<
+        reinterpret_cast<void*>(region->address()) << " -> " << reinterpret_cast<void*>(region->address_end()) <<
+        " (" << region->length() << ") : " << region->name());
+    }
+
     test();
 
     DEBUG("Hello, kernel World!");
