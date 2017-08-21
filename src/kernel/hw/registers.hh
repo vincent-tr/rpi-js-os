@@ -5,7 +5,8 @@ namespace kernel {
   namespace hw {
     namespace registers {
 
-      static constexpr uint32_t control_mmu = 0x1;
+      static constexpr uint32_t control_mmu = 1;
+      static constexpr uint32_t control_high_exception_vector = 1 << 13;
 
       static inline uint32_t control_read() {
         uint32_t value;

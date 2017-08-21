@@ -2,14 +2,14 @@
 #include <stdint.h>
 
 #include "kernel/utils/debug.hh"
-#include "kernel/hw/interrupts.hh"
+#include "kernel/hw/exceptions.hh"
 
 namespace kernel {
   namespace utils {
 
     void panic(const char *msg) {
 
-      hw::interrupts::disable();
+      hw::exceptions::disable();
 
       (void)msg;
       DEBUG("PANIC: " << msg);

@@ -9,7 +9,9 @@ SECTIONS
     .text :
     {
         KEEP(*(.text.boot))
-        KEEP(*(.text.interrupts))
+        __text_exceptions_start = .;
+        KEEP(*(.text.exceptions))
+        __text_exceptions_end = .;
         *(.text)
     }
     . = ALIGN(4096); /* align to page size */

@@ -5,7 +5,7 @@
 
 #include "kernel/hw/uart.hh"
 #include "kernel/hw/atags.hh"
-#include "kernel/hw/interrupts.hh"
+#include "kernel/hw/exceptions.hh"
 #include "kernel/hw/memory/phys-page.hh"
 #include "kernel/mm/protection.hh"
 #include "kernel/hw/memory/vm-page.hh"
@@ -77,13 +77,13 @@ namespace kernel {
     kernel::hw::atags::init(patags);
     parse_atags();
 
-    kernel::hw::interrupts::init();
-
     kernel::hw::memory::phys_page::init(_hw_mem_desc_begin, _hw_mem_desc_end);
     kernel::hw::memory::vm_page::init();
     kernel::mm::region::init();
     kernel::hw::memory::vm_page::activate();
     kernel::mm::allocator::init();
+
+    kernel::hw::exceptions::init();
 
     DEBUG("kernel memory layout");
     for(auto *region = kernel::mm::region::get_first(); region; region = kernel::mm::region::get_next(region)) {

@@ -1,15 +1,22 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "interrupts.hh"
+#include <string.h>
+
+#include "exceptions.hh"
 #include "kernel/utils/debug.hh"
+#include "kernel/mm/protection.hh"
+#include "kernel/mm/region.hh"
+#include "kernel/platform.hh"
+#include "kernel/hw/registers.hh"
 
 // https://github.com/brianwiddas/pi-baremetal/blob/master/interrupts.c
 // https://github.com/BrianSidebotham/arm-tutorial-rpi/blob/master/part-4/armc-013/rpi-interrupts.c
+// https://stackoverflow.com/questions/21312963/arm-bootloader-interrupt-vector-table-understanding
 
 namespace kernel {
   namespace hw {
-    namespace interrupts {
+    namespace exceptions {
 
       /**
           @brief The Reset vector interrupt handler
@@ -17,8 +24,9 @@ namespace kernel {
           GPU and therefore cause the GPU to start running code again until
           the ARM is handed control at the end of boot loading
       */
-      extern "C" void __attribute__((naked, interrupt("ABORT"), section(".text.interrupts"))) reset_vector() {
+      extern "C" void __attribute__((interrupt("ABORT"))) reset_vector() {
         DEBUG("reset_vector");
+        for(;;);
       }
 
       /**
@@ -26,7 +34,7 @@ namespace kernel {
           If an undefined intstruction is encountered, the CPU will start
           executing this function. Just trap here as a debug solution.
       */
-      extern "C" void __attribute__((naked, interrupt("UNDEF"), section(".text.interrupts"))) undefined_instruction_vector() {
+      extern "C" void __attribute__((interrupt("UNDEF"))) undefined_instruction_vector() {
         DEBUG("undefined_instruction_vector");
         for(;;);
       }
@@ -36,7 +44,7 @@ namespace kernel {
           The CPU will start executing this function. Just trap here as a debug
           solution.
       */
-      extern "C" void __attribute__((naked, interrupt("SWI"), section(".text.interrupts"))) software_interrupt_vector() {
+      extern "C" void __attribute__((interrupt("SWI"))) software_interrupt_vector() {
         DEBUG("software_interrupt_vector");
         for(;;);
       }
@@ -46,8 +54,12 @@ namespace kernel {
           The CPU will start executing this function. Just trap here as a debug
           solution.
       */
-      extern "C" void __attribute__((naked, interrupt("ABORT"), section(".text.interrupts"))) prefetch_abort_vector() {
-        DEBUG("prefetch_abort_vector"); // page fault (code)
+      extern "C" void __attribute__((interrupt("ABORT"))) prefetch_abort_vector() {
+
+        register uint32_t addr;
+        asm volatile("mov %[addr], lr" : [addr] "=r" (addr) );
+
+        DEBUG("prefetch_abort_vector at " << reinterpret_cast<void*>(addr));
         for(;;);
       }
 
@@ -56,8 +68,14 @@ namespace kernel {
           The CPU will start executing this function. Just trap here as a debug
           solution.
       */
-      extern "C" void __attribute__((naked, interrupt("ABORT"), section(".text.interrupts"))) data_abort_vector() {
-        DEBUG("data_abort_vector"); // page fault (data)
+      extern "C" void __attribute__((interrupt("ABORT"))) data_abort_vector() {
+
+        register uint32_t addr, far;
+        asm volatile("mov %[addr], lr" : [addr] "=r" (addr) );
+        /* Read fault address register */
+        asm volatile("mrc p15, 0, %[addr], c6, c0, 0": [addr] "=r" (far) );
+
+        DEBUG("data_abort_vector at " << reinterpret_cast<void*>(addr - 4) << " accessing address " << reinterpret_cast<void*>(far));
         for(;;);
       }
 
@@ -68,7 +86,7 @@ namespace kernel {
           importantly clear the interrupt flag so that the interrupt won't
           immediately put us back into the start of the handler again.
       */
-      extern "C" void __attribute__((naked, interrupt("IRQ"), section(".text.interrupts"))) interrupt_vector() {
+      extern "C" void __attribute__((interrupt("IRQ"))) interrupt_vector() {
         DEBUG("interrupt_vector");
         for(;;);
       }
@@ -94,7 +112,7 @@ namespace kernel {
           empty because the CPU has switched to a fresh set of registers and so has
           not altered the main set of registers.
       */
-      extern "C" void __attribute__((naked, interrupt("FIQ"), section(".text.interrupts"))) fast_interrupt_vector() {
+      extern "C" void __attribute__((interrupt("FIQ"))) fast_interrupt_vector() {
         DEBUG("fast_interrupt_vector");
         for(;;);
       }
@@ -108,21 +126,41 @@ namespace kernel {
        * vector is clearly an error. Also, resetting the Pi will reset VideoCore,
        * and reboot.
        */
-      static __attribute__ ((naked, aligned(32), section(".text.interrupts"))) void vectors() {
+      static __attribute__ ((naked, section(".text.exceptions"))) void vectors() {
         asm volatile(
-          "b reset_vector\n"                 // ARM4_XRQ_RESET
-          "b undefined_instruction_vector\n" // ARM4_XRQ_UNDEF
-          "b software_interrupt_vector\n"    // ARM4_XRQ_SWINT
-          "b prefetch_abort_vector\n"        // ARM4_XRQ_ABRTP
-          "b data_abort_vector\n"            // ARM4_XRQ_ABRTD
-          "b reset_vector\n"                 // ARM4_XRQ_RESV1
-          "b interrupt_vector\n"             // ARM4_XRQ_IRQ
-          "b fast_interrupt_vector\n"        // ARM4_XRQ_FIQ
+          "ldr pc, preset_vector\n"                 // ARM4_XRQ_RESET
+          "ldr pc, pundefined_instruction_vector\n" // ARM4_XRQ_UNDEF
+          "ldr pc, psoftware_interrupt_vector\n"    // ARM4_XRQ_SWINT
+          "ldr pc, pprefetch_abort_vector\n"        // ARM4_XRQ_ABRTP
+          "ldr pc, pdata_abort_vector\n"            // ARM4_XRQ_ABRTD
+          "ldr pc, preset_vector\n"                 // ARM4_XRQ_RESV1
+          "ldr pc, pinterrupt_vector\n"             // ARM4_XRQ_IRQ
+          "ldr pc, pfast_interrupt_vector\n"        // ARM4_XRQ_FIQ
+          "preset_vector: .word reset_vector\n"
+          "pundefined_instruction_vector: .word undefined_instruction_vector\n"
+          "psoftware_interrupt_vector: .word software_interrupt_vector\n"
+          "pprefetch_abort_vector: .word prefetch_abort_vector\n"
+          "pdata_abort_vector: .word data_abort_vector\n"
+          "pinterrupt_vector: .word interrupt_vector\n"
+          "pfast_interrupt_vector: .word fast_interrupt_vector\n"
         );
       }
 
+      extern "C" uint32_t __text_exceptions_start;
+      extern "C" uint32_t __text_exceptions_end;
+
       void init() {
-        asm("msr cpsr, %[ps]" : : [ps]"r" (&vectors));
+
+        constexpr uint32_t vectors_address = 0xFFFF0000;
+        const uint32_t &page_size = kernel::platform::get().page_size();
+        const uint32_t vectors_size = reinterpret_cast<uint32_t>(&__text_exceptions_end) - reinterpret_cast<uint32_t>(&__text_exceptions_start);
+        kernel::mm::region::create(vectors_address, page_size, kernel::mm::protection{1,1}, "kernel:exceptions");
+        DEBUG("memcpy " << reinterpret_cast<void*>(vectors_address) << " " << reinterpret_cast<void*>(vectors) << " " << vectors_size);
+        memcpy(reinterpret_cast<void*>(vectors_address), &__text_exceptions_start, vectors_size);
+
+        uint32_t control = registers::control_read();
+        control |= registers::control_high_exception_vector;
+        registers::control_write(control);
 
         enable();
       }
