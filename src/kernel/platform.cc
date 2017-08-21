@@ -83,6 +83,8 @@ namespace kernel {
     kernel::hw::memory::vm_page::activate();
     kernel::mm::allocator::init();
 
+    // TODO: move stack
+
     kernel::hw::exceptions::init();
 
     DEBUG("kernel memory layout");

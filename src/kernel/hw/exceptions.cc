@@ -162,6 +162,8 @@ namespace kernel {
         control |= registers::control_high_exception_vector;
         registers::control_write(control);
 
+        // TODO: setup exception stack
+
         enable();
       }
 
