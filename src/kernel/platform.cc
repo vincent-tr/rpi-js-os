@@ -81,7 +81,7 @@ namespace kernel {
 
     kernel::hw::memory::phys_page::init(_hw_mem_desc_begin, _hw_mem_desc_end);
     kernel::hw::memory::vm_page::init();
-    kernel::mm::region::init();
+    kernel::mm::region::init_bootstrap();
     kernel::hw::memory::vm_page::activate();
     kernel::mm::allocator::init();
 
@@ -104,15 +104,7 @@ namespace kernel {
 
   void platform::thread_main() {
 
-    kernel::mm::region::clean_reserved();
-
-    DEBUG("kernel memory layout");
-    for(auto *region = kernel::mm::region::get_first(); region; region = kernel::mm::region::get_next(region)) {
-      DEBUG(
-        "region: " <<
-        reinterpret_cast<void*>(region->address()) << " -> " << reinterpret_cast<void*>(region->address_end()) <<
-        " (" << region->length() << ") : " << region->name());
-    }
+    kernel::mm::region::init_finalize();
 
     test();
 

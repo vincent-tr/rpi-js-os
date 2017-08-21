@@ -38,8 +38,8 @@ namespace kernel {
         return _name;
       }
 
-      static void init();
-      static void clean_reserved();
+      static void init_bootstrap();
+      static void init_finalize();
 
       static region *find(const uint32_t &address);
 

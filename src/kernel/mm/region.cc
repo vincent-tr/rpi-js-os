@@ -325,7 +325,7 @@ namespace kernel {
     static region *stack;
     static region *exc_stack;
 
-    void region::init() {
+    void region::init_bootstrap() {
       const auto &platform = kernel::platform::get();
 
       create_internal_region(reserved_start,               reserved_end,               true,  "kernel:reserved"); // create as rw because it contains the initial stack
@@ -340,10 +340,18 @@ namespace kernel {
       exc_stack = create(0xFFF00000, 0x4000,   protection{1, 1}, "kernel:exc_stack");
     }
 
-    void region::clean_reserved() {
+    void region::init_finalize() {
       region_info *ri = list.find(reserved_start);
       ri->unmap();
       ri->_prot = protection{0,0};
+
+      DEBUG("kernel memory layout");
+      for(auto *r = get_first(); r; r = get_next(r)) {
+        DEBUG(
+          "region: " <<
+          reinterpret_cast<void*>(r->address()) << " -> " << reinterpret_cast<void*>(r->address_end()) <<
+          " (" << r->length() << ") : " << r->name());
+      }
     }
 
     void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name) {
