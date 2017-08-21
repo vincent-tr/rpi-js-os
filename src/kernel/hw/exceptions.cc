@@ -25,7 +25,7 @@ namespace kernel {
           GPU and therefore cause the GPU to start running code again until
           the ARM is handed control at the end of boot loading
       */
-      extern "C" void __attribute__((interrupt("ABORT"))) reset_vector() {
+      extern "C" void __attribute__((used, interrupt("ABORT"))) reset_vector() {
         DEBUG("reset_vector");
         for(;;);
       }
@@ -35,7 +35,7 @@ namespace kernel {
           If an undefined intstruction is encountered, the CPU will start
           executing this function. Just trap here as a debug solution.
       */
-      extern "C" void __attribute__((interrupt("UNDEF"))) undefined_instruction_vector() {
+      extern "C" void __attribute__((used, interrupt("UNDEF"))) undefined_instruction_vector() {
         DEBUG("undefined_instruction_vector");
         for(;;);
       }
@@ -45,7 +45,7 @@ namespace kernel {
           The CPU will start executing this function. Just trap here as a debug
           solution.
       */
-      extern "C" void __attribute__((interrupt("SWI"))) software_interrupt_vector() {
+      extern "C" void __attribute__((used, interrupt("SWI"))) software_interrupt_vector() {
         DEBUG("software_interrupt_vector");
         for(;;);
       }
@@ -55,7 +55,7 @@ namespace kernel {
           The CPU will start executing this function. Just trap here as a debug
           solution.
       */
-      extern "C" void __attribute__((interrupt("ABORT"))) prefetch_abort_vector() {
+      extern "C" void __attribute__((used, interrupt("ABORT"))) prefetch_abort_vector() {
 
         register uint32_t addr;
         asm volatile("mov %[addr], lr" : [addr] "=r" (addr) );
@@ -69,7 +69,7 @@ namespace kernel {
           The CPU will start executing this function. Just trap here as a debug
           solution.
       */
-      extern "C" void __attribute__((interrupt("ABORT"))) data_abort_vector() {
+      extern "C" void __attribute__((used, interrupt("ABORT"))) data_abort_vector() {
 
         register uint32_t addr, far;
         asm volatile("mov %[addr], lr" : [addr] "=r" (addr) );
@@ -87,7 +87,7 @@ namespace kernel {
           importantly clear the interrupt flag so that the interrupt won't
           immediately put us back into the start of the handler again.
       */
-      extern "C" void __attribute__((interrupt("IRQ"))) interrupt_vector() {
+      extern "C" void __attribute__((used, interrupt("IRQ"))) interrupt_vector() {
         DEBUG("interrupt_vector");
         for(;;);
       }
@@ -113,7 +113,7 @@ namespace kernel {
           empty because the CPU has switched to a fresh set of registers and so has
           not altered the main set of registers.
       */
-      extern "C" void __attribute__((interrupt("FIQ"))) fast_interrupt_vector() {
+      extern "C" void __attribute__((used, interrupt("FIQ"))) fast_interrupt_vector() {
         DEBUG("fast_interrupt_vector");
         for(;;);
       }
@@ -127,7 +127,7 @@ namespace kernel {
        * vector is clearly an error. Also, resetting the Pi will reset VideoCore,
        * and reboot.
        */
-      static __attribute__ ((naked, section(".text.exceptions"))) void vectors() {
+      static __attribute__ ((used, naked, section(".text.exceptions"))) void vectors() {
         asm volatile(
           "ldr pc, preset_vector\n"                 // ARM4_XRQ_RESET
           "ldr pc, pundefined_instruction_vector\n" // ARM4_XRQ_UNDEF
@@ -170,7 +170,6 @@ namespace kernel {
         const uint32_t &page_size = kernel::platform::get().page_size();
         const uint32_t vectors_size = reinterpret_cast<uint32_t>(&__text_exceptions_end) - reinterpret_cast<uint32_t>(&__text_exceptions_start);
         kernel::mm::region::create(vectors_address, page_size, kernel::mm::protection{1,1}, "kernel:exceptions");
-        DEBUG("memcpy " << reinterpret_cast<void*>(vectors_address) << " " << reinterpret_cast<void*>(vectors) << " " << vectors_size);
         memcpy(reinterpret_cast<void*>(vectors_address), &__text_exceptions_start, vectors_size);
 
         uint32_t control = registers::control_read();
