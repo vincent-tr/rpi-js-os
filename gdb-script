@@ -1,0 +1,4 @@
+target remote localhost:1234
+symbol-file build/qemu/rpi-js-os.elf
+layout asm
+layout regs
