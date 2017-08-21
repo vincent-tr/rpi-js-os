@@ -1,10 +1,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string.h>
+
 #include "kernel/utils/debug.hh"
 #include "kernel/hw/memory/phys-page.hh"
 #include "kernel/mm/protection.hh"
 #include "kernel/hw/memory/vm-page.hh"
+#include "kernel/mm/region.hh"
 #include "kernel/platform.hh"
 #include "kernel/utils/list.hh"
 #include "kernel/utils/panic.hh"
@@ -30,7 +33,17 @@ namespace test {
     ppage *current;
     uint32_t num_alloc_ppages = 0, num_free_ppages = 0;
     const uint32_t &page_size = kernel::platform::get().page_size();
-    const uint32_t pages_count = (kernel::platform::get().ram_size() - kernel::platform::get().hw_mem_desc_end()) / page_size - 2; // region slab + interrupts region
+
+    uint32_t available_size = kernel::platform::get().ram_size();
+    for(auto *region = kernel::mm::region::get_first(); region; region = kernel::mm::region::get_next(region)) {
+      // this mapping is not in RAM
+      if(!strcmp(region->name(), "kernel:device_map")) {
+        continue;
+      }
+
+      available_size -= region->length();
+    }
+    const uint32_t pages_count = available_size / page_size;
 
     ASSERT(sizeof(ppage) == page_size);
     DEBUG("page size: " << page_size);
