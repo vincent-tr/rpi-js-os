@@ -48,6 +48,9 @@ namespace kernel {
 
       static const region *get_first();
       static const region *get_next(const region *region);
+
+      static const region *get_stack();
+      static const region *get_exc_stack();
     };
   }
 }

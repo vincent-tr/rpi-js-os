@@ -322,6 +322,8 @@ namespace kernel {
 
     static region_list list;
     static region_cache cache;
+    static region *stack;
+    static region *exc_stack;
 
     void region::init() {
       const auto &platform = kernel::platform::get();
@@ -332,6 +334,9 @@ namespace kernel {
       create_internal_region(&__bss_start,                 &__bss_end,                 true,  "kernel:bss");
       create_internal_region(platform.hw_mem_desc_begin(), platform.hw_mem_desc_end(), true,  "kernel:hw_mem_desc");
       create_internal_region(devices_start,                devices_end,                true,  "kernel:device_map");
+
+      stack     = create(0xFFD00000, 0x100000, protection{1, 1}, "kernel:stack");
+      exc_stack = create(0xFFF00000, 0x4000,   protection{1, 1}, "kernel:exc_stack");
     }
 
     void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name) {
@@ -405,6 +410,13 @@ namespace kernel {
 
     const region *region::get_next(const region *region) {
       return list.get_next(static_cast<const region_info *>(region));
+    }
+
+    const region *region::get_stack() {
+      return stack;
+    }
+    const region *region::get_exc_stack() {
+      return exc_stack;
     }
   }
 }
