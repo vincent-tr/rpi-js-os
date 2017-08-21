@@ -150,7 +150,7 @@ namespace kernel {
       extern "C" uint32_t __text_exceptions_start;
       extern "C" uint32_t __text_exceptions_end;
 
-      /*static*/ void setup_stacks(const void *stack) {
+      static void setup_stacks(const void *stack) {
         registers::mode_change(registers::mode_fiq);
         asm volatile("mov sp, %0" : : "r" (stack) : "memory");
         registers::mode_change(registers::mode_irq);
