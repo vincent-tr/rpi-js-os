@@ -13,6 +13,7 @@
 // https://github.com/brianwiddas/pi-baremetal/blob/master/interrupts.c
 // https://github.com/BrianSidebotham/arm-tutorial-rpi/blob/master/part-4/armc-013/rpi-interrupts.c
 // https://stackoverflow.com/questions/21312963/arm-bootloader-interrupt-vector-table-understanding
+// https://stackoverflow.com/questions/22295566/how-can-i-put-arm-processor-in-different-modes-using-c-program
 
 namespace kernel {
   namespace hw {
@@ -149,6 +150,20 @@ namespace kernel {
       extern "C" uint32_t __text_exceptions_start;
       extern "C" uint32_t __text_exceptions_end;
 
+      /*static*/ void setup_stacks(const void *stack) {
+        registers::mode_change(registers::mode_fiq);
+        asm volatile("mov sp, %0" : : "r" (stack) : "memory");
+        registers::mode_change(registers::mode_irq);
+        asm volatile("mov sp, %0" : : "r" (stack) : "memory");
+        registers::mode_change(registers::mode_abt);
+        asm volatile("mov sp, %0" : : "r" (stack) : "memory");
+        registers::mode_change(registers::mode_sys);
+        asm volatile("mov sp, %0" : : "r" (stack) : "memory");
+        registers::mode_change(registers::mode_und);
+        asm volatile("mov sp, %0" : : "r" (stack) : "memory");
+        registers::mode_change(registers::mode_svc);
+      }
+
       void init() {
 
         constexpr uint32_t vectors_address = 0xFFFF0000;
@@ -162,7 +177,9 @@ namespace kernel {
         control |= registers::control_high_exception_vector;
         registers::control_write(control);
 
-        // TODO: setup exception stack
+        const kernel::mm::region *exc_stack = kernel::mm::region::get_exc_stack();
+        void *stack_ptr = reinterpret_cast<void*>(exc_stack->address_end());
+        setup_stacks(stack_ptr);
 
         enable();
       }
