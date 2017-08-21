@@ -39,6 +39,7 @@ namespace kernel {
       }
 
       static void init();
+      static void clean_reserved();
 
       static region *find(const uint32_t &address);
 

@@ -40,8 +40,8 @@ namespace kernel {
 #endif
     ;
 
-    static constexpr uint32_t stack_start = 0;
-    static const uint32_t stack_end = reinterpret_cast<uint32_t>(&__text_start);
+    static constexpr uint32_t reserved_start = 0;
+    static const uint32_t reserved_end = reinterpret_cast<uint32_t>(&__text_start);
 
     struct region_info;
 
@@ -327,7 +327,8 @@ namespace kernel {
 
     void region::init() {
       const auto &platform = kernel::platform::get();
-      create_internal_region(stack_start,                  stack_end,                  true,  "kernel:stack");
+
+      create_internal_region(reserved_start,               reserved_end,               true,  "kernel:reserved"); // create as rw because it contains the initial stack
       create_internal_region(&__text_start,                &__text_end,                false, "kernel:text");
       create_internal_region(&__rodata_start,              &__rodata_end,              false, "kernel:rodata");
       create_internal_region(&__data_start,                &__data_end,                true,  "kernel:data");
@@ -337,6 +338,12 @@ namespace kernel {
 
       stack     = create(0xFFD00000, 0x100000, protection{1, 1}, "kernel:stack");
       exc_stack = create(0xFFF00000, 0x4000,   protection{1, 1}, "kernel:exc_stack");
+    }
+
+    void region::clean_reserved() {
+      region_info *ri = list.find(reserved_start);
+      ri->unmap();
+      ri->_prot = protection{0,0};
     }
 
     void create_internal_region(const uint32_t &begin, const uint32_t &end, const bool &can_write, const char *name) {

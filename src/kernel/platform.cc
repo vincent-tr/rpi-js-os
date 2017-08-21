@@ -16,6 +16,8 @@
 
 namespace kernel {
 
+  static void start_thread(void *stack, void(*entry)());
+
   void platform::parse_atags() {
     for(hw::atags::reader r; r; ++r) {
       switch(r->tag) {
@@ -83,9 +85,26 @@ namespace kernel {
     kernel::hw::memory::vm_page::activate();
     kernel::mm::allocator::init();
 
-    // TODO: move stack
-
     kernel::hw::exceptions::init();
+
+    start_thread(reinterpret_cast<void*>(kernel::mm::region::get_stack()->address_end()), thread_entry);
+  }
+
+  void start_thread(void *stack, void(*entry)()) {
+    asm volatile("mov sp, %0" : : "r" (stack) : "memory");
+    asm volatile("mov r3, %0" : : "r" (entry) : "memory");
+    asm volatile("blx r3");
+
+    for(;;);
+  }
+
+  void platform::thread_entry() {
+    platform::get().thread_main();
+  }
+
+  void platform::thread_main() {
+
+    kernel::mm::region::clean_reserved();
 
     DEBUG("kernel memory layout");
     for(auto *region = kernel::mm::region::get_first(); region; region = kernel::mm::region::get_next(region)) {
