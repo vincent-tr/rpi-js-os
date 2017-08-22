@@ -38,7 +38,7 @@ build/$(CONFIG)/$(KERNEL_BIN).elf: build/$(CONFIG)/crti.o build/$(CONFIG)/boot.o
 		build/newlib/arm-none-eabi/newlib/libc/libc.a \
 		$(CRTEND_OBJ) \
 		build/$(CONFIG)/crtn.o \
-		-lgcc -lsupc++
+		-lgcc
 
 build/$(CONFIG)/crti.o: src/crti.c build/$(CONFIG)
 	$(CC) $(CRTFLAGS) -c $< -o $@
