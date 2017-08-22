@@ -9,6 +9,7 @@ namespace kernel {
 
       static void *allocate(const uint32_t &size);
       static void deallocate(void *ptr);
+      static uint32_t get_size(void *ptr);
     };
 
   }

@@ -147,9 +147,10 @@ namespace kernel {
       slab_manip<object_size, object_count, is_slab_in_area>::destroy(slab);
     }
 
-    template<uint32_t object_size>
+    template<uint32_t obj_size>
     class cache {
     public:
+      static constexpr uint32_t object_size = obj_size;
       static constexpr uint32_t object_count = 4096 / object_size; // should we not hardcode 4096 ?
       static constexpr uint32_t slab_size = sizeof(slab<object_size, object_count, false>);
       static constexpr bool is_slab_in_area = object_size >= slab_size && (object_size / 2 < slab_size);
@@ -203,6 +204,10 @@ namespace kernel {
         return ret;
       }
 
+      bool is_in(void *ptr) {
+        return !!find(ptr);
+      }
+
       bool deallocate(void *ptr) {
         slab_type *slab = find(ptr);
         if(!slab) {
@@ -242,6 +247,14 @@ namespace kernel {
 
         return next.deallocate(ptr);
       }
+
+      inline uint32_t get_size(void *ptr) {
+        if(cache.is_in(ptr)) {
+          return cache_type::object_size;
+        }
+
+        return next.get_size(ptr);
+      }
     };
 
     template<typename cache_type>
@@ -260,6 +273,14 @@ namespace kernel {
       inline bool deallocate(void *ptr) {
         return cache.deallocate(ptr);
       }
+
+      inline uint32_t get_size(void *ptr) {
+        if(cache.is_in(ptr)) {
+          return cache_type::object_size;
+        }
+
+        return 0;
+      }
     };
 
     template<typename... cache_types>
@@ -272,6 +293,10 @@ namespace kernel {
 
       inline bool deallocate(void *ptr) {
         return caches.deallocate(ptr);
+      }
+
+      inline uint32_t get_size(void *ptr) {
+        return caches.get_size(ptr);
       }
     };
 
@@ -311,6 +336,18 @@ namespace kernel {
       ASSERT(reg);
       ASSERT(reg->address() == reinterpret_cast<uint32_t>(ptr));
       region::release(reg);
+    }
+
+    uint32_t allocator::get_size(void *ptr) {
+      uint32_t size = caches.get_size(ptr);
+      if(size) {
+        return size;
+      }
+
+      auto *reg = region::find(reinterpret_cast<uint32_t>(ptr));
+      ASSERT(reg);
+      ASSERT(reg->address() == reinterpret_cast<uint32_t>(ptr));
+      return reg->length();
     }
   }
 }

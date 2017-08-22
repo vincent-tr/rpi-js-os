@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "kernel/mm/allocator.hh"
+#include "allocator.hh"
 
 void *operator new(size_t s)     throw() {
   return kernel::mm::allocator::allocate(s);
