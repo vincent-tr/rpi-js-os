@@ -48,7 +48,7 @@
 #			"" if crt0 is provided when sys_dir is set
 #   noinclude		list of include files to not install
 
-newlib_cflags=
+newlib_cflags="-DMALLOC_PROVIDED"
 libm_machine_dir=
 machine_dir=
 sys_dir=

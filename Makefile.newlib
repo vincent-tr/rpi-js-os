@@ -6,7 +6,15 @@ print-%  : ; @echo $* = $($*)
 
 all: build/newlib
 	cd build/newlib; \
-	../../ext/newlib-$(NEWLIB_VERSION)/configure --target=arm-none-eabi; \
+	../../ext/newlib-$(NEWLIB_VERSION)/configure \
+    --target=arm-none-eabi \
+    --enable-newlib-io-long-long \
+    --enable-newlib-io-long-double \
+    --disable-newlib-atexit-dynamic-alloc \
+    --enable-newlib-global-atexit \
+    --disable-newlib-multithread \
+    --disable-newlib-supplied-syscalls \
+    --enable-lite-exit; \
 	$(MAKE)
 
 build/newlib:
