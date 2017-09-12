@@ -1,8 +1,4 @@
-RM = rm
-MAKE = make
-COPY = cp
-
-KERNEL_BIN = rpi-js-os
+include common.mk
 
 all: $(KERNEL_BIN) $(KERNEL_BIN).qemu
 

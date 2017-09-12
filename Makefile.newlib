@@ -1,6 +1,4 @@
-MKDIR = mkdir
-MAKE = make
-NEWLIB_VERSION = 2.5.0
+include common.mk
 
 print-%  : ; @echo $* = $($*)
 
