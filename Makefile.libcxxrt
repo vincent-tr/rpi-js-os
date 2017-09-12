@@ -1,0 +1,18 @@
+MKDIR = mkdir
+MAKE = make
+NEWLIB_VERSION = 2.5.0
+LIBCXXRT_VERSION = 2017.08
+
+print-%  : ; @echo $* = $($*)
+
+all: build/libcxxrt
+	cd build/libcxxrt; \
+  cmake -DNEWLIB_VERSION=$(NEWLIB_VERSION) \
+        -DCMAKE_TOOLCHAIN_FILE=../../cmake_toolchain.libcxxrt \
+        ../../ext/libcxxrt-$(LIBCXXRT_VERSION)/libcxxrt; \
+  $(MAKE)
+
+build/libcxxrt:
+	$(MKDIR) -p build/libcxxrt
+
+.PHONY: all

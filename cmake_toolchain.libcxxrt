@@ -1,0 +1,13 @@
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR arm)
+set(CMAKE_CROSSCOMPILING 1)
+set(CMAKE_C_COMPILER_WORKS 1)
+set(CMAKE_CXX_COMPILER_WORKS 1)
+
+set(toolchain_prefix arm-none-eabi-)
+set(CMAKE_C_COMPILER ${toolchain_prefix}gcc)
+set(CMAKE_CXX_COMPILER ${toolchain_prefix}gcc)
+
+include_directories(../../../src)
+include_directories(../../../ext/newlib-${NEWLIB_VERSION}/newlib/libc/include)
+add_compile_options(-mcpu=arm1176jzf-s -fpic -ffreestanding -std=gnu++14 -O2 -Wall -Wextra -pedantic)
