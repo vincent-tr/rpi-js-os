@@ -1,0 +1,39 @@
+include common.mk
+
+COMMON_LIBCXXRT = -DLIBCXXRT_WEAK_LOCKS \
+                  -D_LIBCPP_HAS_NO_THREADS \
+                  -I./src/support/libcxxrt \
+                  -I./ext/newlib-$(NEWLIB_VERSION)/newlib/libc/include \
+                  -I./ext/libcxxrt-$(LIBCXXRT_VERSION)/libcxxrt/include \
+                  -include ./build/newlib/arm-none-eabi/newlib/newlib.h
+
+CXXFLAGS = $(COMMON_CXXFLAGS) $(COMMON_LIBCXXRT) \
+           -Wno-extra \
+           -I./ext/libcxx-$(LIBCXX_VERSION)/libcxx/include \
+           -include ./ext/libcxx-$(LIBCXX_VERSION)/libcxx/include/cstdlib
+
+CFLAGS = $(COMMON_CFLAGS) $(COMMON_LIBCXXRT) -Wno-implicit-function-declaration
+
+CXX_SOURCES:=$(shell $(FIND) ext/libcxxrt-$(LIBCXXRT_VERSION)/libcxxrt/src -name '*.cc')
+CXX_OBJECTS:=$(patsubst ext/libcxxrt-$(LIBCXXRT_VERSION)/libcxxrt/src/%.cc,build/libcxxrt/%-cxx.o,$(CXX_SOURCES))
+
+C_SOURCES:=$(shell $(FIND) ext/libcxxrt-$(LIBCXXRT_VERSION)/libcxxrt/src -name '*.c')
+C_OBJECTS:=$(patsubst ext/libcxxrt-$(LIBCXXRT_VERSION)/libcxxrt/src/%.c,build/libcxxrt/%-c.o,$(C_SOURCES))
+
+print-%  : ; @echo $* = $($*)
+
+all: build/libcxxrt/libcxxrt.a
+
+build/libcxxrt:
+	$(MKDIR) -p build/libcxxrt
+
+build/libcxxrt/libcxxrt.a: $(CXX_OBJECTS) $(C_OBJECTS)
+	$(AR) rcs $@ $(CXX_OBJECTS) $(C_OBJECTS)
+
+build/libcxxrt/%-cxx.o: build/libcxxrt
+	$(CXX) $(CXXFLAGS) -c $(patsubst build/libcxxrt/%-cxx.o,ext/libcxxrt-$(LIBCXXRT_VERSION)/libcxxrt/src/%.cc,$@) -o $@
+
+build/libcxxrt/%-c.o: build/libcxxrt
+	$(CC) $(CFLAGS) -c $(patsubst build/libcxxrt/%-c.o,ext/libcxxrt-$(LIBCXXRT_VERSION)/libcxxrt/src/%.c,$@) -o $@
+
+.PHONY: all

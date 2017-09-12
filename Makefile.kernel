@@ -25,6 +25,7 @@ build/$(CONFIG)/$(KERNEL_BIN).elf: build/$(CONFIG)/crti.o build/$(CONFIG)/boot.o
 		$(CRTBEGIN_OBJ) \
 		build/$(CONFIG)/boot.o \
 		$(KERNEL_OBJECTS) \
+		build/libcxxrt/libcxxrt.a \
 		build/newlib/arm-none-eabi/newlib/libc/libc.a \
 		$(CRTEND_OBJ) \
 		build/$(CONFIG)/crtn.o \
