@@ -6,9 +6,20 @@ extern "C" {
 #include <errno.h>
 #undef errno
 extern int errno;
+}
 
-// _exit
-// Exit a program without cleaning up files. If your system doesn’t provide this, it is best to avoid linking with subroutines that require it (exit, system).
+
+#include "syscalls_def.hh"
+
+namespace support {
+  void (*exit_impl)(int status);
+}
+
+extern "C" {
+
+void _exit(int status) {
+  support::exit_impl(status);
+}
 
 int close(int file) {
   (void)file;
@@ -128,5 +139,23 @@ int write(int file, char *ptr, int len) {
   return len;
 }
 */
+
+// export symbols ?!?
+int (*_close)(int file) = close;
+int (*_execve)(char *name, char **argv, char **env) = execve;
+int (*_fork)(void) = fork;
+int (*_fstat)(int file, struct stat *st) = fstat;
+int (*_getpid)(void) = getpid;
+int (*_isatty)(int file) = isatty;
+int (*_kill)(int pid, int sig) = kill;
+int (*_link)(char *old, char *_new) = link;
+int (*_lseek)(int file, int ptr, int dir) = lseek;
+int (*_open)(const char *name, int flags, int mode) = open;
+int (*_read)(int file, char *ptr, int len) = read;
+int (*_stat)(const char *file, struct stat *st) = stat;
+int (*_times)(struct tms *buf) = times;
+int (*_unlink)(char *name) = unlink;
+int (*_wait)(int *status) = wait;
+int (*_write)(int file, char *ptr, int len) = write;
 
 }

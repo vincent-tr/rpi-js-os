@@ -6,8 +6,10 @@ LDFLAGS = -ffreestanding -O2 -nostdlib -T src/linker-$(CONFIG).ld
 
 CRTBEGIN_OBJ:=$(shell $(CC) $(COMMON_CFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJ:=$(shell $(CC) $(COMMON_CFLAGS) -print-file-name=crtend.o)
-KERNEL_SOURCES:=$(shell $(FIND) src -name '*.cc')
+KERNEL_SOURCES:=$(shell $(FIND) src/kernel -name '*.cc')
 KERNEL_OBJECTS:=$(patsubst %.cc,build/$(CONFIG)/%.o,$(subst /,_,$(patsubst src/%,%,$(KERNEL_SOURCES))))
+SUPPORT_SOURCES:=$(shell $(FIND) src/support -name '*.cc')
+SUPPORT_OBJECTS:=$(patsubst %.cc,build/$(CONFIG)/%.o,$(subst /,_,$(patsubst src/%,%,$(SUPPORT_SOURCES))))
 
 print-%  : ; @echo $* = $($*)
 
@@ -19,7 +21,7 @@ build/$(CONFIG):
 build/$(CONFIG)/$(KERNEL_BIN): build/$(CONFIG)/$(KERNEL_BIN).elf
 	$(OBJCOPY) $< -O binary $@
 
-build/$(CONFIG)/$(KERNEL_BIN).elf: build/$(CONFIG)/crti.o build/$(CONFIG)/boot.o $(KERNEL_OBJECTS) build/$(CONFIG)/crtn.o
+build/$(CONFIG)/$(KERNEL_BIN).elf: build/$(CONFIG)/crti.o build/$(CONFIG)/boot.o $(KERNEL_OBJECTS) $(SUPPORT_OBJECTS) build/$(CONFIG)/crtn.o
 	$(LINK) $(LDFLAGS) -o $@ \
 		build/$(CONFIG)/crti.o \
 		$(CRTBEGIN_OBJ) \
@@ -27,6 +29,7 @@ build/$(CONFIG)/$(KERNEL_BIN).elf: build/$(CONFIG)/crti.o build/$(CONFIG)/boot.o
 		$(KERNEL_OBJECTS) \
 		build/libcxxrt/libcxxrt.a \
 		build/newlib/arm-none-eabi/newlib/libc/libc.a \
+		$(SUPPORT_OBJECTS) \
 		$(CRTEND_OBJ) \
 		build/$(CONFIG)/crtn.o \
 		-lgcc
