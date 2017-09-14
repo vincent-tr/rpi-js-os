@@ -25,6 +25,10 @@ SECTIONS
     . = ALIGN(4096); /* align to page size */
     __rodata_end = .;
 
+   __exidx_start = .;
+  .ARM.exidx   : { *(.ARM.exidx*) }
+   __exidx_end = .;
+
     __data_start = .;
     .data :
     {
