@@ -3,12 +3,10 @@ include common.mk
 CXXFLAGS = $(COMMON_CXXFLAGS) \
            -I./ext/newlib-$(NEWLIB_VERSION)/newlib/libc/include/ \
            -I./ext/libcxx-$(LIBCXX_VERSION)/libcxx/include/ \
-           -DLIBCXXABI_HAS_NO_THREADS \
-           -D_LIBCPP_HAS_NO_THREADS \
            -include ./build/newlib/arm-none-eabi/newlib/newlib.h
 
-SOURCES:=$(shell $(FIND) ext/libcxx-$(LIBCXXABI_VERSION)/libcxx/src -name '*.cpp')
-OBJECTS:=$(patsubst ext/libcxx-$(LIBCXXABI_VERSION)/libcxx/src/%.cpp,build/libcxx/%.o,$(SOURCES))
+SOURCES:=$(shell $(FIND) ext/libcxx-$(LIBCXX_VERSION)/libcxx/src -name '*.cpp')
+OBJECTS:=$(patsubst ext/libcxx-$(LIBCXX_VERSION)/libcxx/src/%.cpp,build/libcxx/%.o,$(SOURCES))
 
 print-%  : ; @echo $* = $($*)
 
@@ -21,6 +19,6 @@ build/libcxx/libcxx.a: $(OBJECTS)
 	$(AR) rcs libcxx.a $(OBJECTS)
 
 build/libcxx/%.o: build/libcxx
-	$(CXX) $(CXXFLAGS) -c $(patsubst build/libcxx/%.o,ext/libcxx-$(LIBCXXABI_VERSION)/libcxx/src/%.cpp,$@) -o $@
+	$(CXX) $(CXXFLAGS) -c $(patsubst build/libcxx/%.o,ext/libcxx-$(LIBCXX_VERSION)/libcxx/src/%.cpp,$@) -o $@
 
 .PHONY: all build/libcxx/%.o
