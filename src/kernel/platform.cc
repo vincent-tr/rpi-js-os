@@ -12,6 +12,7 @@
 #include "kernel/mm/region.hh"
 #include "kernel/mm/allocator.hh"
 #include "kernel/utils/debug.hh"
+#include "kernel/utils/panic.hh"
 #include "test/test.hh"
 
 namespace kernel {
@@ -106,8 +107,14 @@ namespace kernel {
 
     kernel::mm::region::init_finalize();
 
-    test();
+    try {
 
-    DEBUG("Hello, kernel World!");
+      test();
+
+      DEBUG("Hello, kernel World!");
+
+    } catch(...) {
+      kernel::utils::panic("uncaught error");
+    }
   }
 }
