@@ -1,7 +1,8 @@
 include common.mk
 
 ASFLAGS = $(COMMON_ASFLAGS) -I./src
-CXXFLAGS = $(COMMON_CXXFLAGS) -I./src -I./ext/newlib-$(NEWLIB_VERSION)/newlib/libc/include
+CXXFLAGS = $(COMMON_CXXFLAGS) -I./src -I./build/newlib/arm-none-eabi/newlib -I./ext/newlib-$(NEWLIB_VERSION)/newlib/libc/include
+
 LDFLAGS = -ffreestanding -O2 -nostdlib -T src/linker-$(CONFIG).ld
 
 CRTBEGIN_OBJ    := $(shell $(CC) $(COMMON_CFLAGS) -print-file-name=crtbegin.o)

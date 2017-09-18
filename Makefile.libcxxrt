@@ -2,6 +2,7 @@ include common.mk
 
 COMMON_LIBCXXRT = -I./src/support/libcxxrt \
                   -I./ext/libcxxrt-$(LIBCXXRT_VERSION)/libcxxrt/include \
+                  -I./build/newlib/arm-none-eabi/newlib/ \
                   -I./ext/newlib-$(NEWLIB_VERSION)/newlib/libc/include \
                   -include ./build/newlib/arm-none-eabi/newlib/newlib.h
 
