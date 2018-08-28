@@ -1,8 +1,10 @@
 include common.mk
 
 CXXFLAGS = $(COMMON_CXXFLAGS) \
-           -I./ext/newlib-$(NEWLIB_VERSION)/newlib/libc/include/ \
            -I./ext/libcxx-$(LIBCXX_VERSION)/libcxx/include/ \
+           -I./ext/libcxxrt-$(LIBCXXRT_VERSION)/libcxxrt/include \
+           -I./build/newlib/arm-none-eabi/newlib/ \
+           -I./ext/newlib-$(NEWLIB_VERSION)/newlib/libc/include/ \
            -include ./build/newlib/arm-none-eabi/newlib/newlib.h
 
 SOURCES:=$(shell $(FIND) ext/libcxx-$(LIBCXX_VERSION)/libcxx/src -name '*.cpp')

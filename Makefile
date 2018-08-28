@@ -15,6 +15,9 @@ newlib:
 libcxxrt:
 	$(MAKE) -f Makefile.libcxxrt
 
+libcxx:
+	$(MAKE) -f Makefile.libcxx
+
 $(KERNEL_BIN):
 	$(MAKE) CONFIG=rpi DEFINES= -f Makefile.kernel
 	$(COPY) build/rpi/$(KERNEL_BIN) $@
